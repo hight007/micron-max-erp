@@ -9,12 +9,15 @@ const Header = () => {
   const doLogout = () => {
     localStorage.removeItem(key.isLogined);
     localStorage.removeItem(key.loginTime);
-
+    localStorage.removeItem(key.token);
+    localStorage.removeItem(key.user_id);
+    localStorage.removeItem(key.user_level);
+    localStorage.removeItem(key.username)
     navigate("/login");
   };
 
   return (
-    <nav className="main-header navbar navbar-expand navbar-primary navbar-dark">
+    <nav className="main-header navbar navbar-expand navbar-primary navbar-dark bg-main">
       <ul className="navbar-nav">
         <li className="nav-item">
           <a className="nav-link" data-widget="pushmenu" role="button">
@@ -23,6 +26,8 @@ const Header = () => {
         </li>
       </ul>
       <ul className="navbar-nav ml-auto">
+        
+
         <div style={{ cursor: "pointer" }}>
           <FontSizeChanger
             targets={[".resizeable"]}
@@ -30,23 +35,28 @@ const Header = () => {
 
             }}
             options={{
-              stepSize: 8,
+              stepSize: 3,
               range: 5,
             }}
             customButtons={{
-              up: <span style={{ fontSize: "2em" }}>A</span>,
-              down: <span style={{ fontSize: "1em" }}>A</span>,
+              up: <span style={{ fontSize: "1.5em" }}>A</span>,
+              down: <span style={{ fontSize: "0.8em" }}>A</span>,
               style: {
-                backgroundColor: "gray",
+                backgroundColor: '#0098f1',
                 color: "white",
                 WebkitBoxSizing: "border-box",
-                WebkitBorderRadius: "5px",
-                width: "4em",
+                WebkitBorderRadius: "0.5em",
+                width: "3em",
+                // height: "2em",
               },
               buttonsMargin: 1,
             }}
           />
         </div>
+
+        <li className="nav-item">
+          <label className="nav-link">ชื่อผู้ใช้งาน : {localStorage.getItem(key.username)}</label>
+        </li>
         <li
           className="nav-item"
           onClick={(e) => {
@@ -59,8 +69,13 @@ const Header = () => {
             data-controlsidebar-slide="true"
             role="button"
           >
-            {"Logout "}
+            {"ลงชื่อออก "}
             <i className="fas fa-sign-out-alt" />
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" data-widget="fullscreen" role="button">
+            <i className="fas fa-expand-arrows-alt" />
           </a>
         </li>
       </ul>

@@ -15,30 +15,55 @@ import Footer from "./components/main/Footer";
 import moment from "moment";
 
 //Home
-import Home from "./components/Home";
+import Home from "./components/main/Home";
 
 //Authen
 import Login from "./components/authen/Login";
+import User from "./components/authen/User";
+
+//purchaseOrder
+import CreatePO from './components/purchaseOrder/CreatePO'
+import ReportPO from './components/purchaseOrder/ReportPO'
+
+//Job Order
+import JobCard from "./components/jobOrder/JobCards"
 
 const showElement = (element) => {
-  // const isLogined = localStorage.getItem(key.isLogined);
-  const isLogined = "true";
-  if (isLogined === "true") {
+  const isLogined = localStorage.getItem(key.isLogined);
+  if (isLogined == "true") {
     return element;
   }
 };
 
 function App() {
+  
+  const [value, setValue] = useState(0); // integer state
+
+  const doForceUpdate = () => {
+    try {
+      setValue(value + 1);
+    } catch (error) { }
+  };
+
   return (
     <BrowserRouter>
-      
+
       {showElement(<Header />)}
       {showElement(<Sidebar />)}
       {/* Home */}
       <Routes>
-        <Route path="/Home" element={<Home />} />
+        <Route path="/Home" element={<RequireAuth><Home /></RequireAuth>} />
         {/* Authen */}
-        <Route path="/Login" element={<Login />} />
+        <Route path="/Login" element={<Login forceUpdate={doForceUpdate} />} />
+        <Route path="/Master/User" element={<RequireAuth userLevel={["admin","power"]}><User /></RequireAuth>} />
+
+        {/* PurchaseOrder */}
+        <Route path="/PurchaseOrder/CreatePO" element={<RequireAuth userLevel={["admin", "power"]}><CreatePO /></RequireAuth>} />
+        <Route path="/PurchaseOrder/ReportPO" element={<RequireAuth userLevel={["admin", "power"]}><ReportPO /></RequireAuth>} />
+
+        {/* JobOrder */}
+        <Route path="/JobOrder/JobCards" element={<RequireAuth ><JobCard /></RequireAuth>} />
+
 
         <Route
           path="/"
@@ -65,9 +90,10 @@ function App() {
 export default App;
 
 function RequireAuth(props) {
+  const navigate = useNavigate();
   // check permission
-  if (localStorage.getItem(key.isLogined) !== "true") {
-    return <Navigate to="/Login" />;
+  if (localStorage.getItem(key.isLogined) != "true") {
+    window.location.replace('/Login');
   }
 
   //check time to login
@@ -75,15 +101,39 @@ function RequireAuth(props) {
     "DD-MMM-yyyy HH:mm:ss"
   );
   if (moment().diff(moment(loginTime), "h") > 4) {
-    localStorage.removeItem(key.isLogined);
-    localStorage.removeItem(key.loginTime);
+
+    
     Swal.fire({
-      icon: "info",
+      icon: "warning",
       title: "Oops...",
-      text: "Login time out , please login again",
+      text: "เวลาการเข้าใช้งานหมดอายุ โปรดลงชื่อเข้าใช้ใหม่",
     }).then(() => {
+      localStorage.removeItem(key.isLogined);
+      localStorage.removeItem(key.loginTime);
+      localStorage.removeItem(key.token);
+      localStorage.removeItem(key.user_id);
+      localStorage.removeItem(key.user_level);
+      localStorage.removeItem(key.username)
+      navigate("/Login");
       return <Navigate to="/Login" />;
     });
   }
+
+  //check user level
+  if (props.userLevel) {
+    const userLevel = localStorage.getItem(key.user_level)
+    if (!props.userLevel.includes(userLevel)) {
+      navigate("/Home");
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "ระดับไม่เพียงพอต่อการเข้าถึง",
+      }).then(() => {
+        return <Navigate to="/Home" />;
+      });
+    }
+
+  }
+
   return props.children;
 }

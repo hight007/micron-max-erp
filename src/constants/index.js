@@ -23,49 +23,29 @@ export const NO = "NO";
 export const OK = "ok";
 export const NOK = "nok";
 
-export const apiUrl = "http://localhost:2010/api/";
+export const apiUrl = "http://localhost:2008/api/MicronMax/";
 // export const apiUrl = "http://10.196.28.68:2010/api/";
-export const secretKey = "C31e$t!c@";
 export const apiName = {
-  gecko: {
-    tbWidgetVersion: "gecko/tbWidgetVersion",
-    tbWidget: "gecko/tbWidget",
-    tbFilterVersion: "gecko/tbFilterVersion",
-    tbFilter: "gecko/tbFilter",
-    tbDashboardVersion: "gecko/tbDashboardVersion",
-    tbDashboard: "gecko/tbDashboard",
-    tbDatasourceVersion: "gecko/tbDatasourceVersion",
-    tbDatasource: "gecko/tbDatasource",
-    tbGeckoItemNameList: "gecko/tbGeckoItemNameList",
-    version: "gecko/version",
+  authen: {
+    login: "authen/login/",
   },
-  storeConnection: {
-    connection: "storeConnection/connection",
+  user: {
+    register: "user/register/",
+    allUsers: "user/allUsers/",
   },
-  storeProcedures: {
-    versionList: "storeProcedures/versionList",
-    query: "storeProcedures/query",
-    query_updated: "storeProcedures/query_updated",
-    storeProcedures: "storeProcedures/storeProcedures",
-    storeProceduresUpdate: "storeProcedures/storeProceduresUpdate",
-    updatedSpName: "storeProcedures/compareStoreProceduresWithLastVersion",
-  },
-  migration: {
-    tbExternalConnections: "migration/tbExternalConnections",
-    tbDatasource: "migration/tbDatasource",
-  },
-  analytics: {
-    bu: "analytics/bu",
-    eventLogRawData: "analytics/eventLogRawData",
-    duration_analysis: "analytics/duration_analysis",
-  },
-  omise: {
-    charge: "omise/charge",
-  },
+  purchaseOrder:
+  {
+    po: 'purchaseOrder/po/',
+    get : 'purchaseOrder/get/',
+  }
 };
 
 export const key = {
+  user_id: "user_id",
+  username: "username",
+  user_level: "user_level",
   token: "token",
   isLogined: "isLogined",
   loginTime: "loginTime",
+
 };

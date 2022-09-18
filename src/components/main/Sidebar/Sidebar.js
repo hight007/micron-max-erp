@@ -5,22 +5,137 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const menu_purchaseOrder_render = () => {
+    return (
+      <li className="nav-item">
+        <a
+          className={`nav-link ${location.pathname.includes("purchaseOrder") ? "active" : ""
+            }`}
+        >
+          <i className="nav-icon fas fa-shopping-cart" />
+
+          <p>
+            คำสั่งซื้อ
+            <i className="right fas fa-angle-left" />
+          </p>
+        </a>
+        <ul className="nav nav-treeview">
+          <li className="nav-item">
+            <a
+              onClick={() => navigate("/purchaseOrder/CreatePO")}
+              className={
+                location.pathname === "/purchaseOrder/CreatePO"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              <i className="far fa-circle nav-icon" />
+              <p>เพิ่มคำสั่งซื้อ</p>
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              onClick={() => navigate("/purchaseOrder/ReportPO")}
+              className={
+                location.pathname === "/purchaseOrder/ReportPO"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              <i className="far fa-circle nav-icon" />
+              <p>รายงานคำสั่งซื้อ</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+    );
+  };
+
+  const menu_jobOrder_render = () => {
+    return (
+      <li className="nav-item">
+        <a
+          className={`nav-link ${location.pathname.includes("JobOrder") ? "active" : ""
+            }`}
+        >
+          <i className="nav-icon fas fa-industry" />
+
+          <p>
+            คำสั่งงาน
+            <i className="right fas fa-angle-left" />
+          </p>
+        </a>
+        <ul className="nav nav-treeview">
+          <li className="nav-item">
+            <a
+              onClick={() => navigate("/JobOrder/jobCards")}
+              className={
+                location.pathname === "/JobOrder/jobCards"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              <i className="far fa-circle nav-icon" />
+              <p>ใบสั่งงาน</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+    );
+  };
+
+  const menu_master_render = () => {
+    return (
+      <li className="nav-item">
+        <a
+
+          className={`nav-link ${location.pathname.includes("Master") ? "active" : ""
+            }`}
+        >
+          <i className="nav-icon fas fa-tasks" />
+
+          <p>
+            มาสเตอร์
+            <i className="right fas fa-angle-left" />
+          </p>
+        </a>
+        <ul className="nav nav-treeview">
+          <li className="nav-item">
+            <a
+              onClick={() => navigate("/Master/user")}
+              className={
+                location.pathname === "/Master/user"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              <i className="far fa-circle nav-icon" />
+              <p>จัดการผู้ใช้งาน</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+    );
+  };
+
   return (
-    <aside className="main-sidebar sidebar-light-primary elevation-4">
-      <a
+    <aside className="main-sidebar sidebar-dark-primary elevation-4 bg-main">
+      <a 
         onClick={() => {
           // navigate("/home");
           window.open("/home", "_blank");
         }}
-        className="brand-link bg-primary"
+        // href="/home"
+        className="brand-link bg-main"
         style={{ cursor: "pointer" }}
       >
         <img
-          src="/src/images/spectrumPro-logo-white.png"
+          src="/dist/images/MicromMax logo.jpg"
           alt="spectrumPro Logo"
           className="brand-image elevation-2 "
           style={{ opacity: "1" }}
         />
+        <label className=" elevation-2" style={{ cursor: "pointer" }}>Micron max ERP</label>
         <span
           className="brand-text font-weight-light"
           style={{ visibility: "hidden" }}
@@ -61,6 +176,9 @@ const Sidebar = () => {
                   role="menu"
                   data-accordion="false"
                 >
+                  {menu_purchaseOrder_render()}
+                  {menu_jobOrder_render()}
+                  {menu_master_render()}
                 </ul>
               </nav>
             </div>
