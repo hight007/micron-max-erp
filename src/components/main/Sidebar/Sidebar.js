@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { key } from "../../../constants"
+import * as $ from 'jquery';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    const trees = window.$('[data-widget="treeview"]');
+    trees.Treeview('init');
+  }, [])
+  
+
   const menu_purchaseOrder_render = () => {
     return (
-      <li className="nav-item">
-        <a
+      <li className="nav-item has-treeview">
+        <a href="#"
           className={`nav-link ${location.pathname.includes("purchaseOrder") ? "active" : ""
             }`}
         >
@@ -54,7 +61,7 @@ const Sidebar = () => {
 
   const menu_jobOrder_render = () => {
     return (
-      <li className="nav-item">
+      <li className="nav-item has-treeview">
         <a
           className={`nav-link ${location.pathname.includes("JobOrder") ? "active" : ""
             }`}
@@ -89,7 +96,7 @@ const Sidebar = () => {
     const userLevel = localStorage.getItem(key.user_level)
     if (userLevel == 'admin' || userLevel == 'power') {
       return (
-        <li className="nav-item">
+        <li className="nav-item has-treeview">
           <a
 
             className={`nav-link ${location.pathname.includes("Master") ? "active" : ""
@@ -188,16 +195,12 @@ const Sidebar = () => {
               style={{ padding: "0px 8px", height: "100%", width: "100%" }}
             >
               <nav className="mt-2">
-                <ul
-                  class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-compact"
-                  data-widget="treeview"
-                  role="menu"
-                  data-accordion="false"
-                >
+                <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true">
                   {menu_purchaseOrder_render()}
                   {menu_jobOrder_render()}
                   {menu_master_render()}
                 </ul>
+
               </nav>
             </div>
           </div>
