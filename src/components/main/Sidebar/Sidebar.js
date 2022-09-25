@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { key } from "../../../constants"
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -68,15 +69,15 @@ const Sidebar = () => {
         <ul className="nav nav-treeview">
           <li className="nav-item">
             <a
-              onClick={() => navigate("/JobOrder/jobCards")}
+              // onClick={() => navigate("/JobOrder/jobCards")}
               className={
-                location.pathname === "/JobOrder/jobCards"
+                location.pathname.includes("JobCards")
                   ? "nav-link active"
                   : "nav-link"
               }
             >
               <i className="far fa-circle nav-icon" />
-              <p>ใบสั่งงาน</p>
+              <p>ปริ้นใบสั่งงาน</p>
             </a>
           </li>
         </ul>
@@ -85,42 +86,59 @@ const Sidebar = () => {
   };
 
   const menu_master_render = () => {
-    return (
-      <li className="nav-item">
-        <a
+    const userLevel = localStorage.getItem(key.user_level)
+    if (userLevel == 'admin' || userLevel == 'power') {
+      return (
+        <li className="nav-item">
+          <a
 
-          className={`nav-link ${location.pathname.includes("Master") ? "active" : ""
-            }`}
-        >
-          <i className="nav-icon fas fa-tasks" />
+            className={`nav-link ${location.pathname.includes("Master") ? "active" : ""
+              }`}
+          >
+            <i className="nav-icon fas fa-tasks" />
 
-          <p>
-            มาสเตอร์
-            <i className="right fas fa-angle-left" />
-          </p>
-        </a>
-        <ul className="nav nav-treeview">
-          <li className="nav-item">
-            <a
-              onClick={() => navigate("/Master/user")}
-              className={
-                location.pathname === "/Master/user"
-                  ? "nav-link active"
-                  : "nav-link"
-              }
-            >
-              <i className="far fa-circle nav-icon" />
-              <p>จัดการผู้ใช้งาน</p>
-            </a>
-          </li>
-        </ul>
-      </li>
-    );
+            <p>
+              มาสเตอร์
+              <i className="right fas fa-angle-left" />
+            </p>
+          </a>
+          <ul className="nav nav-treeview">
+            <li className="nav-item">
+              <a
+                onClick={() => navigate("/Master/user")}
+                className={
+                  location.pathname === "/Master/user"
+                    ? "nav-link active"
+                    : "nav-link"
+                }
+              >
+                <i className="far fa-circle nav-icon" />
+                <p>จัดการผู้ใช้งาน</p>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                onClick={() => navigate("/Master/Customer")}
+                className={
+                  location.pathname === "/Master/Customer"
+                    ? "nav-link active"
+                    : "nav-link"
+                }
+              >
+                <i className="far fa-circle nav-icon" />
+                <p>จัดการลูกค้า</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+      );
+    }
   };
 
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4 bg-main">
-      <a 
+      <a
         onClick={() => {
           // navigate("/home");
           window.open("/home", "_blank");

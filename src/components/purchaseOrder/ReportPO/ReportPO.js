@@ -7,12 +7,17 @@ import { apiName, key, OK } from "../../../constants";
 import Swal from "sweetalert2";
 import moment from "moment";
 import { httpClient } from "../../../utils/HttpClient";
+import MaterialReactTable from 'material-react-table';
+import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
+import { Box, Button } from '@mui/material';
+import _ from "lodash";
+import { Link } from "react-router-dom";
 
 export default function ReportPO() {
   const [isLoad, setisLoad] = useState(false)
 
   const [dateFrom, setdateFrom] = useState(moment().add(-1, 'M').toDate())
-  const [dateTo, setdateTo] = useState(new Date())
+  const [dateTo, setdateTo] = useState(moment().endOf('D').toDate())
   const [dateType, setdateType] = useState('')
 
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
@@ -20,6 +25,9 @@ export default function ReportPO() {
   const [invoiceNumber, setinvoiceNumber] = useState('')
   const [ext, setext] = useState('')
   const [micron, setmicron] = useState('')
+  const [customer, setcustomer] = useState('')
+
+  const [purchaseData, setpurchaseData] = useState([])
 
   useEffect(() => {
     doGetPurchaseOrder()
@@ -27,7 +35,7 @@ export default function ReportPO() {
 
   const doReset = () => {
     setdateFrom(moment().add(-1, 'M').toDate())
-    setdateTo(new Date())
+    setdateTo(moment().startOf('D').toDate())
     setdateType('')
     setpurchaseOrderName('')
     setdrawing('')
@@ -38,23 +46,47 @@ export default function ReportPO() {
 
   const doGetPurchaseOrder = async () => {
     try {
+      setisLoad(true)
       let condition = {}
       if (dateType != '') {
-        condition[dateType] = { dateFrom, dateTo }
+        condition[dateType] = { dateFrom: moment(dateFrom).startOf('day').toDate(), dateTo: moment(dateTo).endOf('day').toDate() }
       } else {
         if (purchaseOrderName == '' && drawing == '' && invoiceNumber == '' && ext == '' && micron == '') {
-          condition.createdAt = { dateFrom, dateTo }
+          condition.createdAt = { dateFrom: moment(dateFrom).startOf('day').toDate(), dateTo: moment(dateTo).endOf('day').toDate() }
         }
       }
 
-
-
+      if (purchaseOrderName != '' && purchaseOrderName != null) {
+        condition.purchaseOrderName = purchaseOrderName
+      }
+      if (drawing != '' && drawing != null) {
+        condition.drawing = drawing
+      }
+      if (invoiceNumber != '' && invoiceNumber != null) {
+        condition.invoiceNumber = invoiceNumber
+      }
+      if (ext != '' && ext != null) {
+        condition.ext = ext
+      }
+      if (micron != '' && micron != null) {
+        condition.micron = micron
+      }
+      if (customer != '' && customer != null) {
+        condition.customer = customer
+      }
 
       const response = await httpClient.post(apiName.purchaseOrder.get, { condition })
 
       console.log(response.data);
+      if (response.data.api_result === OK) {
+        setpurchaseData(response.data.result)
+      }
+
     } catch (error) {
       console.log(error);
+    }
+    finally {
+      setisLoad(false)
     }
   }
 
@@ -90,7 +122,7 @@ export default function ReportPO() {
                 <DatePicker
                   className="form-control"
                   selected={dateFrom}
-                  onChange={(date) => setdateFrom(date)}
+                  onChange={(date) => setdateFrom(moment(date).startOf('D').toDate())}
                 />
 
               </div>
@@ -100,7 +132,7 @@ export default function ReportPO() {
                 <DatePicker
                   className="form-control"
                   selected={dateTo}
-                  onChange={(date) => setdateTo(date)}
+                  onChange={(date) => setdateTo(moment(date).endOf('D').toDate())}
                 />
 
               </div>
@@ -163,6 +195,16 @@ export default function ReportPO() {
                   required
                   className="form-control" />
               </div>
+              <div className="form-group col-md-6 resizeable">
+                <i className="fas fa-user-plus" style={{ marginRight: 10 }} />
+                <label >
+                  ชื่อลูกค้า (Customer Name)</label>
+                <input
+                  value={customer}
+                  onChange={(e) => setcustomer(e.target.value)}
+                  required
+                  className="form-control" />
+              </div>
             </div>
           </div>
         </div>
@@ -171,18 +213,226 @@ export default function ReportPO() {
   }
 
   const renderSearchResult = () => {
-    return <>
-      <div className="col-md-12">
+    const columns = [
+      {
+        header: 'แก้ไข/ลบ',
+        accessorKey: 'purchaseOrderNumber', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => (
+          <div>
+            <Link style={{ marginRight: 10 }} className="btn btn-default" to={`/PurchaseOrder/UpdatePO/${cell.getValue()}`} target="_blank"  >
+              <i className="fas fa-edit" />
+            </Link>
+            <button className="btn btn-default" onClick={() => {
+              doDeletePo(cell.getValue(), row.original.purchaseOrderName)
+            }}>
+              <i className="fas fa-trash-alt" />
+            </button>
+          </div>
+        )
+      },
+      {
+        header: 'ใบสั่งซื้อ (Purchase Order)',
+        accessorKey: 'purchaseOrderName', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'ชื่อลูกค้า (Customer name)',
+        accessorKey: 'customerName', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'แบบแปลน (Drawing)',
+        accessorKey: 'drawing', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'วันที่ออกใบสั่งซื้อ (Purchase Order date)',
+        accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'วันที่ขอใบสั่งซื้อ (Request date)',
+        accessorKey: 'requestDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'วันที่นัดส่งงาน (Commit date)',
+        accessorKey: 'commitDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'ext',
+        accessorKey: 'ext', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'Micron',
+        accessorKey: 'micron', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'จำนวน (Quantity)',
+        accessorKey: 'quantity', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'ราคาต่อหน่วย (Unit price)',
+        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'ราคารวม (Total price)',
+        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() * row.original.quantity
+      },
+      {
+        header: 'เลขที่ใบส่งของ (Invoice Number)',
+        accessorKey: 'invoiceNumber', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'วันที่ออกใบส่งของ (Invoice date)',
+        accessorKey: 'invoiceDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'รายละเอียด (Description)',
+        accessorKey: 'description', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'คอมเม้น (Comment)',
+        accessorKey: 'comment', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'เพิ่มเมื่อ (Created At)',
+        accessorKey: 'createdAt', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy HH:mm:ss"),
+      },
+      {
+        header: 'เพิ่มโดย (Created By)',
+        accessorKey: 'createdBy', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'แก้ไขเมื่อ (Updated At)',
+        accessorKey: 'updatedAt', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy HH:mm:ss"),
+      },
+      {
+        header: 'แก้ไขโดย (Updated By)',
+        accessorKey: 'updatedBy', //simple accessorKey pointing to flat data
+      },
 
-      </div>
-    </>
+
+    ]
+
+    const handleExportData = () => {
+      const csvOptions = {
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalSeparator: '.',
+        showLabels: true,
+        useBom: true,
+        useKeysAsHeaders: true,
+        // headers: columns.map((c) => c.header),
+        filename: `Report_Purchase_Order_${moment().format('YYYY-MM-DD')}`,
+      };
+
+      const csvExporter = new ExportToCsv(csvOptions);
+      csvExporter.generateCsv(purchaseData);
+    };
+
+    const handlePrint = (data) => {
+      const _data = _.map(data, 'original');
+      const _data_ = _.map(_data, 'purchaseOrderNumber');
+      window.open('/JobOrder/JobCards/' + JSON.stringify(_data_), '_blank');
+    }
+
+    if (purchaseData.length > 0) {
+      return <>
+        <div className="col-md-12">
+          <MaterialReactTable
+            columns={columns}
+            data={purchaseData}
+            enableColumnOrdering
+            enableRowSelection
+            positionToolbarAlertBanner="bottom"
+            renderTopToolbarCustomActions={({ table }) => (
+              <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleExportData()
+                  }}
+                >
+                  <i className="fas fa-file-csv" style={{ marginRight: 10 }} />
+                  ส่งออกข้อมูลเป็น CSV
+                </button>
+                <button
+                  disabled={
+                    !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+                  }
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handlePrint(table.getSelectedRowModel().rows)
+                  }}
+                >
+                  <i className="fas fa-print" style={{ marginRight: 10 }} />
+                  พิมพ์ใบคำสั่งงาน
+                </button>
+              </Box>
+            )}
+          />
+        </div>
+      </>
+    }
   }
+
+  const doDeletePo = (purchaseOrderNumber, purchaseOrderName_) => {
+    Swal.fire({
+      title: 'โปรดยืนยัน',
+      text: `ต้องการลบคำสั่งซื้อ ${purchaseOrderName_}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setisLoad(true)
+          const result = await httpClient.patch(apiName.purchaseOrder.po,
+            {
+              purchaseOrderNumber: purchaseOrderNumber,
+              updatedBy: localStorage.getItem(key.user_id),
+              isDeleted: true,
+            }
+          )
+          setisLoad(false)
+          if (result.data.api_result == OK) {
+            Swal.fire({
+              icon: 'success',
+              title: 'สำเร็จ',
+              text: `ลบคำสั่งซื้อ ${purchaseOrderName_} สำเร็จ`
+            }).then(() => doGetPurchaseOrder());
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'ล้มเหลว',
+              text: `ลบสั่งซื้อ ${purchaseOrderName_} ล้มเหลว`
+            })
+          }
+        } catch (error) {
+          console.log(error);
+
+        } finally {
+          setisLoad(false)
+        }
+      }
+    })
+
+  }
+
 
   return (
     <div className="content-wrapper "><ContentHeader header="รายงานคำสั่งซื้อ (Report Purchase Order)" />
+      <LoadingScreen isLoad={isLoad} />
       <section className="content">
         <div className="container-fluid">
-          <LoadingScreen isLoad={isLoad} />
           <div className="row">
             <div className="col-md-12">
               <div className="card card-dark">

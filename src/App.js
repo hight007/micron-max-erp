@@ -24,9 +24,13 @@ import User from "./components/authen/User";
 //purchaseOrder
 import CreatePO from './components/purchaseOrder/CreatePO'
 import ReportPO from './components/purchaseOrder/ReportPO'
+import UpdatePO from './components/purchaseOrder/UpdatePO';
 
 //Job Order
 import JobCard from "./components/jobOrder/JobCards"
+
+//master
+import Customer from "./components/master/Customer"
 
 const showElement = (element) => {
   const isLogined = localStorage.getItem(key.isLogined);
@@ -36,7 +40,7 @@ const showElement = (element) => {
 };
 
 function App() {
-  
+
   const [value, setValue] = useState(0); // integer state
 
   const doForceUpdate = () => {
@@ -55,15 +59,18 @@ function App() {
         <Route path="/Home" element={<RequireAuth><Home /></RequireAuth>} />
         {/* Authen */}
         <Route path="/Login" element={<Login forceUpdate={doForceUpdate} />} />
-        <Route path="/Master/User" element={<RequireAuth userLevel={["admin","power"]}><User /></RequireAuth>} />
+        <Route path="/Master/User" element={<RequireAuth userLevel={["admin", "power"]}><User /></RequireAuth>} />
 
         {/* PurchaseOrder */}
         <Route path="/PurchaseOrder/CreatePO" element={<RequireAuth userLevel={["admin", "power"]}><CreatePO /></RequireAuth>} />
         <Route path="/PurchaseOrder/ReportPO" element={<RequireAuth userLevel={["admin", "power"]}><ReportPO /></RequireAuth>} />
+        <Route path="/PurchaseOrder/UpdatePO/:poNumber" element={<RequireAuth userLevel={["admin", "power"]}><UpdatePO /></RequireAuth>} />
 
         {/* JobOrder */}
-        <Route path="/JobOrder/JobCards" element={<RequireAuth ><JobCard /></RequireAuth>} />
+        <Route path="/JobOrder/JobCards/:listPo" element={<RequireAuth ><JobCard /></RequireAuth>} />
 
+        {/* Master */}
+        <Route path="/Master/Customer" element={<RequireAuth userLevel={["admin", "power"]}><Customer /></RequireAuth>} />
 
         <Route
           path="/"
@@ -102,7 +109,7 @@ function RequireAuth(props) {
   );
   if (moment().diff(moment(loginTime), "h") > 4) {
 
-    
+
     Swal.fire({
       icon: "warning",
       title: "Oops...",

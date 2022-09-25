@@ -99,7 +99,7 @@ export default function User() {
         <div className="col-sm-12" >
 
           <div className="card card-primary">
-            <div className="card-header ">
+            <div className="card-header">
               <h3 class="card-title">เพิ่มผู้ใช้งานใหม่</h3>
               <div class="card-tools">
                 <button type="button" class="btn btn-tool" onClick={(e) => {
@@ -225,8 +225,6 @@ export default function User() {
       // enableGlobalFilter={false} //turn off a feature
       />
     }
-
-
   }
 
   const findUser = (createdBy) => {

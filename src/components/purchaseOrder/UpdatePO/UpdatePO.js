@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from "react";
-import ContentHeader from "../../main/ContentHeader/ContentHeader";
+import moment from 'moment'
+import React, { useEffect, useState } from 'react'
+import { useLocation, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import ContentHeader from "../../main/ContentHeader/ContentHeader";
 import { apiName, key, OK } from "../../../constants";
 import Swal from "sweetalert2";
 import { httpClient } from "../../../utils/HttpClient";
 import LoadingScreen from "../../main/LoadingScreen";
-import moment from "moment";
 
-export default function CreatePO() {
+
+export default function UpdatePO(props) {
   const [isLoad, setisLoad] = useState(false)
 
   const [customers, setcustomers] = useState([])
 
+  // const [purchaseOrderNumber, setpurchaseOrderNumber] = useState(null)
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
-  const [purchaseOrderDate, setpurchaseOrderDate] = useState(moment().startOf('D').toDate())
+  const [purchaseOrderDate, setpurchaseOrderDate] = useState(null)
   const [requestDate, setrequestDate] = useState(null)
   const [commitDate, setcommitDate] = useState(null)
   const [drawing, setdrawing] = useState('')
@@ -25,15 +27,27 @@ export default function CreatePO() {
   const [customer, setcustomer] = useState('')
   const [unitPrice, setunitPrice] = useState(0)
   const [invoiceNumber, setinvoiceNumber] = useState('')
-  const [invoiceDate, setinvoiceDate] = useState(moment().startOf('D').toDate())
+  const [invoiceDate, setinvoiceDate] = useState(null)
   const [comment, setcomment] = useState('')
 
+  const params = useParams();
+
   useEffect(() => {
-    doGetCustomer()
-
-
+    doGetPo(params.poNumber)
   }, [])
 
+
+  const doGetCustomer = async () => {
+    try {
+      const response = await httpClient.get(apiName.master.customer + 'getAll')
+      if (response.data.api_result === OK) {
+        setcustomers(response.data.result)
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const renderInputPO = () => {
     const renderCustomerOption = () => {
@@ -43,10 +57,13 @@ export default function CreatePO() {
         ))
       }
     }
+
     return <div className="card-body resizeable row">
       <div className="col-sm-12" style={{ textAlign: 'center', marginBottom: 20 }}>
         <img
           src="/dist/images/MicromMax logo.jpg"
+          alt="spectrumPro Logo"
+
           style={{ opacity: "1", width: "15%", }}
         />
         <hr />
@@ -173,7 +190,7 @@ export default function CreatePO() {
           onChange={(e) => setcustomer(e.target.value)}
           required
           className="form-control" >
-            <option value="">---เลือกลูกค้า---</option>
+          <option value="">---เลือกลูกค้า---</option>
           {renderCustomerOption()}
         </select>
       </div>
@@ -191,40 +208,41 @@ export default function CreatePO() {
     </div>
   }
 
-  const doGetCustomer = async () => {
+  const doGetPo = async () => {
     try {
-      const response = await httpClient.get(apiName.master.customer + 'getAll')
-      if (response.data.api_result === OK) {
-        console.log(response.data.result);
-        setcustomers(response.data.result)
-      }
+      setisLoad(true)
+      await doGetCustomer()
+      const response = await httpClient.get(apiName.purchaseOrder.po + params.poNumber)
 
+      if (response.data.api_result === OK) {
+        const result = response.data.result;
+        console.log(result);
+        setpurchaseOrderName(result.purchaseOrderName);
+        setpurchaseOrderDate(moment(result.purchaseOrderDate).toDate());
+        setrequestDate(moment(result.setrequestDate).toDate())
+        setcommitDate(moment(result.commitDate).toDate())
+        setdrawing(result.drawing)
+        setext(result.ext)
+        setunitPrice(result.unitPrice)
+        setquantity(result.quantity)
+        setdescription(result.description)
+        setmicron(result.micron)
+        setinvoiceNumber(result.invoiceNumber)
+        setinvoiceDate(moment(result.invoiceDate).toDate())
+        setcomment(result.comment);
+        setcustomer(result.customerId)
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setisLoad(false)
     }
   }
 
-  const doReset = () => {
-    setpurchaseOrderName('')
-    setpurchaseOrderDate(new Date())
-    setrequestDate(null)
-    setcommitDate(null)
-    setdrawing('')
-    setquantity(0)
-    setdescription('')
-    setmicron('')
-    setext('')
-    setunitPrice(0)
-    setinvoiceNumber('')
-    setinvoiceDate(new Date())
-    setcomment('')
-    setcustomer('')
-  }
-
-  const doCreatePO = () => {
+  const doUpdatePo = async () => {
     Swal.fire({
       title: 'โปรดยืนยัน',
-      text: `ต้องการเพิ่มคำสั่งซื้อ ${purchaseOrderName}`,
+      text: `ต้องการแก้ไขคำสั่งซื้อ ${purchaseOrderName}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -235,8 +253,9 @@ export default function CreatePO() {
       if (result.isConfirmed) {
         try {
           setisLoad(true)
-          const result = await httpClient.post(apiName.purchaseOrder.po,
+          const result = await httpClient.patch(apiName.purchaseOrder.po,
             {
+              purchaseOrderNumber: params.poNumber,
               purchaseOrderName,
               purchaseOrderDate,
               requestDate,
@@ -249,9 +268,9 @@ export default function CreatePO() {
               unitPrice,
               invoiceNumber,
               invoiceDate,
-              createdBy: localStorage.getItem(key.user_id),
-              customerId : customer,
+              updatedBy: localStorage.getItem(key.user_id),
               comment,
+              customerId: customer
             }
           )
           setisLoad(false)
@@ -259,44 +278,46 @@ export default function CreatePO() {
             Swal.fire({
               icon: 'success',
               title: 'สำเร็จ',
-              text: `เพิ่มคำสั่งซื้อ ${purchaseOrderName} สำเร็จ`
-            }).then(() => doReset());
+              text: `แก้ไขคำสั่งซื้อ ${purchaseOrderName} สำเร็จ`
+            }).then(() => doGetPo());
           } else {
             Swal.fire({
               icon: 'error',
               title: 'ล้มเหลว',
-              text: `เพิ่มคำสั่งซื้อ ${purchaseOrderName} ล้มเหลว`
+              text: `แก้ไขสั่งซื้อ ${purchaseOrderName} ล้มเหลว`
             })
           }
         } catch (error) {
           console.log(error);
+
+        } finally {
           setisLoad(false)
         }
-
       }
     })
+
   }
 
   return (
     <div className="content-wrapper">
-      <ContentHeader header="เพิ่มคำสั่งซื้อ (Add New Purchase Order)" />
+      <ContentHeader header="แก้ไขสั่งซื้อ (Update New Purchase Order)" />
       <section className="content">
         <div className="container-fluid">
           <LoadingScreen isLoad={isLoad} />
           <div className="row">
             <div className="col-md-12">
-              <div className="card card-primary">
+              <div className="card card-warning">
                 <div className="card-header "></div>
                 <form onSubmit={(e) => {
                   e.preventDefault();
-                  doCreatePO()
+                  doUpdatePo()
                 }}>
                   <div className="card-body ">
                     {renderInputPO()}
                   </div>
                   <div className="card-footer">
                     <button type="submit" className="btn btn-primary">ตกลง</button>
-                    <button type="reset" onClick={() => doReset()} className="btn btn-default float-right">ยกเลิก</button>
+                    <button type="reset" onClick={() => doGetPo()} className="btn btn-default float-right">ยกเลิก</button>
                   </div>
                 </form>
               </div>
@@ -304,6 +325,6 @@ export default function CreatePO() {
           </div>
         </div>
       </section>
-    </div >
+    </div>
   )
 }
