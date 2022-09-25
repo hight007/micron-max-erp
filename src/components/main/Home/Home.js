@@ -4,7 +4,7 @@ import ContentHeader from "../ContentHeader/ContentHeader";
 class Home extends Component {
   render() {
     return <div className="content-wrapper">
-      {/* <ContentHeader header="Home" /> */}
+      <ContentHeader header="Home" />
       <section className="content">
         <div className="container-fluid">
           <div className="row" style={{ minHeight: '100%', margin: 10 }}>
