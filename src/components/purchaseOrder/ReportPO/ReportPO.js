@@ -21,27 +21,36 @@ export default function ReportPO() {
   const [dateType, setdateType] = useState('')
 
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
-  const [drawing, setdrawing] = useState('')
   const [invoiceNumber, setinvoiceNumber] = useState('')
-  const [ext, setext] = useState('')
-  const [micron, setmicron] = useState('')
   const [customer, setcustomer] = useState('')
 
   const [purchaseData, setpurchaseData] = useState([])
+  const [customers, setcustomers] = useState([])
 
   useEffect(() => {
+    doGetCustomer()
     doGetPurchaseOrder()
   }, [])
+
+  const doGetCustomer = async () => {
+    try {
+      const response = await httpClient.get(apiName.master.customer + 'getAll')
+      if (response.data.api_result === OK) {
+        console.log(response.data.result);
+        setcustomers(response.data.result)
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const doReset = () => {
     setdateFrom(moment().add(-1, 'M').toDate())
     setdateTo(moment().startOf('D').toDate())
     setdateType('')
     setpurchaseOrderName('')
-    setdrawing('')
     setinvoiceNumber('')
-    setext('')
-    setmicron('')
   }
 
   const doGetPurchaseOrder = async () => {
@@ -51,7 +60,7 @@ export default function ReportPO() {
       if (dateType != '') {
         condition[dateType] = { dateFrom: moment(dateFrom).startOf('day').toDate(), dateTo: moment(dateTo).endOf('day').toDate() }
       } else {
-        if (purchaseOrderName == '' && drawing == '' && invoiceNumber == '' && ext == '' && micron == '') {
+        if (purchaseOrderName == '' && invoiceNumber == '' && customer == '') {
           condition.createdAt = { dateFrom: moment(dateFrom).startOf('day').toDate(), dateTo: moment(dateTo).endOf('day').toDate() }
         }
       }
@@ -59,18 +68,10 @@ export default function ReportPO() {
       if (purchaseOrderName != '' && purchaseOrderName != null) {
         condition.purchaseOrderName = purchaseOrderName
       }
-      if (drawing != '' && drawing != null) {
-        condition.drawing = drawing
-      }
       if (invoiceNumber != '' && invoiceNumber != null) {
         condition.invoiceNumber = invoiceNumber
       }
-      if (ext != '' && ext != null) {
-        condition.ext = ext
-      }
-      if (micron != '' && micron != null) {
-        condition.micron = micron
-      }
+
       if (customer != '' && customer != null) {
         condition.customer = customer
       }
@@ -91,6 +92,14 @@ export default function ReportPO() {
   }
 
   const renderSearchCondition = () => {
+    const renderCustomerOption = () => {
+      if (customers.length > 0) {
+        return customers.map((item) => (
+          <option value={item.customerId}>{item.customerName}</option>
+        ))
+      }
+    }
+
     return (
       <>
         <div className="col-md-12 " >
@@ -160,32 +169,6 @@ export default function ReportPO() {
 
               </ div>
               <div className="form-group col-md-6 resizeable">
-                <i className="fas fa-pencil-ruler" style={{ marginRight: 10 }} />
-                <label >
-                  แบบแปลน (Drawing)</label>
-                <input
-                  value={drawing}
-                  onChange={(e) => setdrawing(e.target.value)}
-                  className="form-control" />
-              </div>
-              <div className="form-group col-md-6 resizeable">
-                <label >μ Micron</label>
-                <input
-                  value={micron}
-                  onChange={(e) => setmicron(e.target.value)}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group col-md-6 resizeable">
-                <i className="fas fa-external-link-alt" style={{ marginRight: 10 }} />
-                <label >ext </label>
-                <input
-                  value={ext}
-                  onChange={(e) => setext(e.target.value)}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group col-md-6 resizeable">
                 <i className="fas fa-file-invoice-dollar" style={{ marginRight: 10 }} />
                 <label >
                   เลขที่ใบส่งของ (Invoice Number)</label>
@@ -195,15 +178,18 @@ export default function ReportPO() {
                   required
                   className="form-control" />
               </div>
-              <div className="form-group col-md-6 resizeable">
-                <i className="fas fa-user-plus" style={{ marginRight: 10 }} />
+              <div className="form-group col-sm-12">
+                <i className="fas fa-user-check" style={{ marginRight: 10 }} />
                 <label >
-                  ชื่อลูกค้า (Customer Name)</label>
-                <input
+                  ชื่อลูกค้า (Customer)</label>
+                <select
                   value={customer}
                   onChange={(e) => setcustomer(e.target.value)}
                   required
-                  className="form-control" />
+                  className="form-control" >
+                  <option value="">---เลือกลูกค้า---</option>
+                  {renderCustomerOption()}
+                </select>
               </div>
             </div>
           </div>
@@ -239,10 +225,6 @@ export default function ReportPO() {
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
       },
       {
-        header: 'แบบแปลน (Drawing)',
-        accessorKey: 'drawing', //simple accessorKey pointing to flat data
-      },
-      {
         header: 'วันที่ออกใบสั่งซื้อ (Purchase Order date)',
         accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
         Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
@@ -258,42 +240,13 @@ export default function ReportPO() {
         Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
       },
       {
-        header: 'ext',
-        accessorKey: 'ext', //simple accessorKey pointing to flat data
-      },
-      {
-        header: 'Micron',
-        accessorKey: 'micron', //simple accessorKey pointing to flat data
-      },
-      {
-        header: 'จำนวน (Quantity)',
-        accessorKey: 'quantity', //simple accessorKey pointing to flat data
-      },
-      {
-        header: 'ราคาต่อหน่วย (Unit price)',
-        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
-      },
-      {
-        header: 'ราคารวม (Total price)',
-        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() * row.original.quantity
-      },
-      {
         header: 'เลขที่ใบส่งของ (Invoice Number)',
         accessorKey: 'invoiceNumber', //simple accessorKey pointing to flat data
       },
       {
         header: 'วันที่ออกใบส่งของ (Invoice date)',
         accessorKey: 'invoiceDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
-      },
-      {
-        header: 'รายละเอียด (Description)',
-        accessorKey: 'description', //simple accessorKey pointing to flat data
-      },
-      {
-        header: 'คอมเม้น (Comment)',
-        accessorKey: 'comment', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() == null ? '' : moment(cell.getValue()).format("DD-MMM-yyyy")
       },
       {
         header: 'เพิ่มเมื่อ (Created At)',

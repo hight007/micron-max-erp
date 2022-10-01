@@ -63,7 +63,7 @@ function App() {
 
         {/* PurchaseOrder */}
         <Route path="/PurchaseOrder/CreatePO" element={<RequireAuth userLevel={["admin", "power"]}><CreatePO /></RequireAuth>} />
-        <Route path="/PurchaseOrder/ReportPO" element={<RequireAuth userLevel={["admin", "power"]}><ReportPO /></RequireAuth>} />
+        <Route path="/PurchaseOrder/ReportPO" element={<RequireAuth><ReportPO /></RequireAuth>} />
         <Route path="/PurchaseOrder/UpdatePO/:poNumber" element={<RequireAuth userLevel={["admin", "power"]}><UpdatePO /></RequireAuth>} />
 
         {/* JobOrder */}

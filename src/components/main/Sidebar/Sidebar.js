@@ -17,7 +17,7 @@ const Sidebar = () => {
     return (
       <li className="nav-item has-treeview">
         <a href="#"
-          className={`nav-link ${location.pathname.includes("purchaseOrder") ? "active" : ""
+          className={`nav-link ${location.pathname.includes("PurchaseOrder") ? "active" : ""
             }`}
         >
           <i className="nav-icon fas fa-shopping-cart" />
@@ -30,9 +30,9 @@ const Sidebar = () => {
         <ul className="nav nav-treeview">
           <li className="nav-item">
             <a
-              onClick={() => navigate("/purchaseOrder/CreatePO")}
+              onClick={() => navigate("/PurchaseOrder/CreatePO")}
               className={
-                location.pathname === "/purchaseOrder/CreatePO"
+                location.pathname === "/PurchaseOrder/CreatePO"
                   ? "nav-link active"
                   : "nav-link"
               }
@@ -43,9 +43,9 @@ const Sidebar = () => {
           </li>
           <li className="nav-item">
             <a
-              onClick={() => navigate("/purchaseOrder/ReportPO")}
+              onClick={() => navigate("/PurchaseOrder/ReportPO")}
               className={
-                location.pathname === "/purchaseOrder/ReportPO"
+                location.pathname === "/PurchaseOrder/ReportPO"
                   ? "nav-link active"
                   : "nav-link"
               }
