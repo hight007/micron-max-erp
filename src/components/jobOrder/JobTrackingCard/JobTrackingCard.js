@@ -3,17 +3,17 @@ import { useParams } from 'react-router-dom';
 import { apiName, OK } from '../../../constants';
 import { httpClient } from '../../../utils/HttpClient';
 import ContentHeader from '../../main/ContentHeader/ContentHeader'
-import ReactToPrint from 'react-to-print';
-import './JobCards.css'
 import moment from 'moment/moment';
 import QRCode from "react-qr-code";
 import LoadingScreen from '../../main/LoadingScreen';
+import ReactToPrint from 'react-to-print';
+import './JobTrackingCard.css'
 
-export default function JobCards(props) {
+export default function JobTrackingCard() {
+
   const params = useParams();
   const [isLoad, setisLoad] = useState(false)
 
-  //ref
   const componentRef = useRef(null);
 
   const [listPo, setlistPo] = useState([])
@@ -26,10 +26,9 @@ export default function JobCards(props) {
     const { listPo } = params
     try {
       setisLoad(true)
-      const response = await httpClient.get(apiName.purchaseOrder.listPo + listPo)
+      const response = await httpClient.get(apiName.purchaseOrder.jobTracking + listPo)
 
       if (response.data.api_result === OK) {
-        // console.log(response.data.result);
         setlistPo(response.data.result)
       } else {
 
@@ -43,7 +42,7 @@ export default function JobCards(props) {
 
   return (
     <div className="content-wrapper">
-      <ContentHeader header="ปริ้นใบสั่งงาน (Job Cards)" />
+      <ContentHeader header="ปริ้นใบตามงาน (Job Tracking Cards)" />
       <LoadingScreen isLoad={isLoad} />
       <section className="content">
         <div className="container-fluid">
@@ -55,7 +54,7 @@ export default function JobCards(props) {
                 </div>
                 <div className="card-body">
                   <ReactToPrint
-                    trigger={() => <button className="btn btn-primary">พิมพ์ใบคำสั่งงาน</button>}
+                    trigger={() => <button className="btn btn-primary">พิมพ์ใบตามงาน</button>}
                     content={() => componentRef.current}
                   />
                   <ComponentToPrint
@@ -63,107 +62,88 @@ export default function JobCards(props) {
                     ref={componentRef} />
                 </div>
                 <div className="card-footer">
-                  
+
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </section>
     </div>
-
   )
 }
 
-
-
 class ComponentToPrint extends Component {
   render() {
-    const renderPageContent = (item, index) => {
+    const renderHeader = () => (
+      <thead style={{ fontSize: 12 }}>
+        <tr>
+          <th style={{ width: '5%' }}>No.</th>
+          <th style={{ width: '11%' }}>วันที่สั่ง</th>
+          <th>ใบสั่งซื้อ</th>
+          <th style={{ width: '12%' }}>รหัส</th>
+          <th style={{ width: '20%' }}>รายการ</th>
+          <th>QTY</th>
+          <th>User</th>
+          <th style={{ width: '11%' }}>วันนัดส่งลูกค้า</th>
+          <th style={{ width: '11%' }}>ขั้นตอนการทำงาน</th>
+          <th style={{ width: '11%' }}>หมายเหตุ</th>
+        </tr>
+      </thead>
+    )
 
-      const renderHeader = () => (
-        <thead>
+    const renderTableBody = () => {
+      const data = this.props.listPo
+      console.log(data);
+      if (data) {
+        return data.map((item, index) => (
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="4">ORDER DATE : {moment().format('DD MMM YYYY')}</th>
-            <th colspan="2" rowspan="2">
+            <td>{index + 1}</td>
+            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
+            <td>
               <QRCode
-                size={64}
-                // style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                size={16}
                 value={item.purchaseOrderName}
-                // viewBox={`0 0 256 256`}
-              />
-            </th>
+              /><br />
+              {item.purchaseOrderName}</td>
+            <td>
+              <QRCode
+                size={16}
+                value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
+              <br />
+              {item['tbPurchaseOrderDetails.drawing']}</td>
+            <td>{item['tbPurchaseOrderDetails.description']}</td>
+            <td>{item['tbPurchaseOrderDetails.quantity'] - item['tbPurchaseOrderDetails.finishedQuantity']}</td>
+            <td>{item['tbUser.username']}</td>
+            <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
+            <td></td>
+            <td></td>
           </tr>
-          <tr>
-            <th style={{ textAlign: 'left' }} colspan="4">Customer : {item.tbCustomer.customerName}</th>
-          </tr>
-          <tr>
-            <th style={{ width: 10 }}>ITEM</th>
-            <th>PO#</th>
-            <th>CODE</th>
-            <th style={{ width: '30%' }}>DESCRIPTION</th>
-            <th>QTY</th>
-            <th>นัดส่งงาน</th>
-          </tr>
-        </thead>
-      )
-
-      const renderTableBody = (data, purchaseOrderName, commitDate) => {
-        console.log('data', data);
-        if (data) {
-          return data.tbPurchaseOrderDetails.map((item, index) => (
-
-            <tr>
-              <td>{item.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
-              <td>{purchaseOrderName}</td>
-              <td>{item.drawing}</td>
-              <td>{item.description}</td>
-              <td>{item.quantity}</td>
-              <td>{moment(commitDate).format('DD MMM YY')}</td>
-            </tr>
-          ))
-        }
+        ))
       }
+    }
 
-      return (
+    return (
+      <div>
         <div className="page ">
           <div className="subpage">
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
                 <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
-                  JOB ORDER CARD
+                  ใบตามงาน
                 </h2>
                 <table className="table table-bordered">
                   {renderHeader()}
-                  <tbody>
-                    {renderTableBody(item, item.purchaseOrderName, item.commitDate)}
+                  <tbody style={{ fontSize: 9 }}>
+                    {renderTableBody()}
                   </tbody>
-
                 </table>
-
               </div>
-
             </div>
           </div>
         </div>
-      )
-    }
-
-    const renderContent = () => {
-      const data = this.props.listPo
-      if (data) {
-        // console.log(data);
-        return data.map((item, index) => (
-          renderPageContent(item, index)
-        ))
-      }
-    }
-    
-    return (
-      <div>
-
-        {renderContent()}
       </div>
-    );
+    )
   }
 }

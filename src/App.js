@@ -28,6 +28,7 @@ import UpdatePO from './components/purchaseOrder/UpdatePO';
 
 //Job Order
 import JobCard from "./components/jobOrder/JobCards"
+import JobTrackingCard from "./components/jobOrder/JobTrackingCard"
 
 //master
 import Customer from "./components/master/Customer"
@@ -68,6 +69,7 @@ function App() {
 
         {/* JobOrder */}
         <Route path="/JobOrder/JobCards/:listPo" element={<RequireAuth ><JobCard /></RequireAuth>} />
+        <Route path="/JobOrder/JobTrackingCards/:listPo" element={<RequireAuth><JobTrackingCard /></RequireAuth>} />
 
         {/* Master */}
         <Route path="/Master/Customer" element={<RequireAuth userLevel={["admin", "power"]}><Customer /></RequireAuth>} />

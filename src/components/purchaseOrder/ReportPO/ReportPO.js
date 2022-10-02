@@ -221,6 +221,11 @@ export default function ReportPO() {
         accessorKey: 'purchaseOrderName', //simple accessorKey pointing to flat data
       },
       {
+        header: 'จำนวนรายการ',
+        accessorKey: 'countDetails', //simple accessorKey pointing to flat data
+      },
+
+      {
         header: 'ชื่อลูกค้า (Customer name)',
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
       },
@@ -292,6 +297,12 @@ export default function ReportPO() {
       window.open('/JobOrder/JobCards/' + JSON.stringify(_data_), '_blank');
     }
 
+    const handleJobTracking = (data) => {
+      const _data = _.map(data, 'original');
+      const _data_ = _.map(_data, 'purchaseOrderNumber');
+      window.open('/JobOrder/JobTrackingCards/' + JSON.stringify(_data_), '_blank');
+    }
+
     if (purchaseData.length > 0) {
       return <>
         <div className="col-md-12">
@@ -326,6 +337,19 @@ export default function ReportPO() {
                   <i className="fas fa-print" style={{ marginRight: 10 }} />
                   พิมพ์ใบคำสั่งงาน
                 </button>
+                <button
+                  disabled={
+                    !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+                  }
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleJobTracking(table.getSelectedRowModel().rows)
+                  }}
+                >
+                  <i className="fas fa-file-contract" style={{ marginRight: 10 }} />
+                  พิมพ์ใบตามงาน
+                </button>
               </Box>
             )}
           />
@@ -348,11 +372,9 @@ export default function ReportPO() {
       if (result.isConfirmed) {
         try {
           setisLoad(true)
-          const result = await httpClient.patch(apiName.purchaseOrder.po,
+          const result = await httpClient.delete(apiName.purchaseOrder.po,
             {
-              purchaseOrderNumber: purchaseOrderNumber,
-              updatedBy: localStorage.getItem(key.user_id),
-              isDeleted: true,
+              data: { purchaseOrderNumber }
             }
           )
           setisLoad(false)

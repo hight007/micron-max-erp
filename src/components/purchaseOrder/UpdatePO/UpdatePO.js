@@ -10,6 +10,7 @@ import LoadingScreen from "../../main/LoadingScreen";
 import Modal from 'react-modal';
 import MaterialReactTable from 'material-react-table';
 import { NumericFormat } from 'react-number-format';
+import _, { set } from 'lodash';
 
 export default function UpdatePO(props) {
   const [isLoad, setisLoad] = useState(false)
@@ -30,13 +31,14 @@ export default function UpdatePO(props) {
   const [invoiceDate, setinvoiceDate] = useState(null)
 
   //PO detail
+  const [purchaseOrderDetailNumber, setpurchaseOrderDetailNumber] = useState('')
   const [quotationNumber, setquotationNumber] = useState('')
   const [drawing, setdrawing] = useState('')
-  const [quantity, setquantity] = useState(0)
-  const [unitPrice, setunitPrice] = useState(0)
+  const [quantity, setquantity] = useState('')
+  const [unitPrice, setunitPrice] = useState('')
   const [description, setdescription] = useState('')
   const [comment, setComment] = useState('')
-
+  const [finishedQuantity, setfinishedQuantity] = useState('')
 
   const params = useParams();
 
@@ -151,7 +153,11 @@ export default function UpdatePO(props) {
           ชื่อลูกค้า (Customer)</label>
         <select
           value={customer}
-          onChange={(e) => setcustomer(e.target.value)}
+          onChange={(e) => {
+            setcustomer(e.target.value)
+            // generatePoName(e.target.value, null);
+          }
+          }
           required
           className="form-control" >
           <option value="">---เลือกลูกค้า---</option>
@@ -171,7 +177,10 @@ export default function UpdatePO(props) {
       <div className="form-group col-sm-6">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
-        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => setpurchaseOrderDate(moment(date).startOf('D').toDate())} />
+        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
+          setpurchaseOrderDate(moment(date).startOf('D').toDate())
+          // generatePoName(null, moment(date).startOf('D').toDate())
+        }} />
 
       </div>
       <div className="form-group col-sm-6">
@@ -223,7 +232,6 @@ export default function UpdatePO(props) {
       setisLoad(true)
       const response = await httpClient.get(apiName.purchaseOrder.detail + 'po=' + poNumber)
       if (response.data.api_result === OK) {
-        console.log(response.data.result);
         setpoDetails(response.data.result)
       }
 
@@ -241,8 +249,11 @@ export default function UpdatePO(props) {
     setunitPrice('')
     setdescription('')
     setComment('')
+    setfinishedQuantity('')
+    setpurchaseOrderDetailNumber('')
     setmodalIsOpen(false)
     doGetPoDetail()
+    setmodalStatus('add')
   }
 
   const openModal = () => {
@@ -263,9 +274,9 @@ export default function UpdatePO(props) {
       <div className="row" style={{ margin: '5%', marginTop: '15%', padding: '0%', backgroundColor: 'rgba(0,0,0,0)', overflow: 'auto' }}>
         <div className="col-sm-12" >
 
-          <div className="card card-primary">
+          <div className={`card card-${modalStatus == 'add' ? 'primary' : 'warning'}`}>
             <div className="card-header">
-              <h3 class="card-title">เพิ่มรายการคำสั่งซื้อ</h3>
+              <h3 class="card-title">{`${modalStatus == 'add' ? 'เพิ่ม' : 'แก้ไข'}รายการคำสั่งซื้อ`}</h3>
               <div class="card-tools">
                 <button type="button" class="btn btn-tool" onClick={(e) => {
                   closeModal();
@@ -276,7 +287,7 @@ export default function UpdatePO(props) {
             </div>
             <form onSubmit={(e) => {
               e.preventDefault();
-              doAddPoDetail()
+              modalStatus == 'add' ? doAddPoDetail() : doUpdatePoDetail()
             }}>
               <div className="card-body row">
 
@@ -294,8 +305,16 @@ export default function UpdatePO(props) {
                 </div>
                 <div className="form-group col-sm-6">
                   <label >ราคาต่อหน่วย (Unit price)</label>
-                  <input value={unitPrice} onChange={(e) => setunitPrice(e.target.value)} required type="number" step={0.01} className="form-control" />
+                  <input value={unitPrice} onChange={(e) => setunitPrice(e.target.value)} required type="number" min={0} step={0.01} className="form-control" />
                 </div>
+                {
+                  modalStatus == 'add' ?
+                    <></> :
+                    <div className="form-group col-sm-12">
+                      <label >จำนวนที่เสร็จสิ้น (Finished Quantity)</label>
+                      <input value={finishedQuantity} onChange={(e) => setfinishedQuantity(e.target.value)} required min={0} max={quantity} step={1} type="number" className="form-control" />
+                    </div>
+                }
                 <div className="form-group col-sm-6">
                   <label >รายละเอียด (Description)</label>
                   <textarea rows={3} value={description} onChange={(e) => setdescription(e.target.value)} className="form-control" />
@@ -304,9 +323,10 @@ export default function UpdatePO(props) {
                   <label >คอมเม้น (Comment)</label>
                   <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="form-control" />
                 </div>
+
               </div>
               <div className="card-footer">
-                <button type="submit" className="btn btn-primary">ตกลง</button>
+                <button type="submit" className={`btn btn-${modalStatus == 'add' ? 'primary' : 'warning'}`}>{modalStatus == 'add' ? 'ตกลง' : 'แก้ไข'}</button>
                 <button type="reset" onClick={() => closeModal()} className="btn btn-default float-right">ยกเลิก</button>
               </div>
             </form>
@@ -324,11 +344,11 @@ export default function UpdatePO(props) {
           accessorKey: 'purchaseOrderDetailNumber', //simple accessorKey pointing to flat data
           Cell: ({ cell, row }) => (
             <div>
-              {/* <button className="btn btn-default" style={{ marginRight: 10 }} onClick={() => {
-                doUpdatePoDetail()
+              <button className="btn btn-default" style={{ marginRight: 10 }} onClick={() => {
+                prepareUpdatePoDetail(cell.getValue())
               }} >
                 <i className="fas fa-edit" />
-              </button> */}
+              </button>
               <button className="btn btn-default" onClick={() => {
                 deDeletePoDetail(cell.getValue())
               }}>
@@ -341,6 +361,7 @@ export default function UpdatePO(props) {
           header: 'เลขที่รายละเอียดคำสั่งซื้อ',
           accessorKey: 'purchaseOrderDetailNumber', //simple accessorKey pointing to flat data
         },
+
         {
           header: 'เลขที่ใบเสนอราคา',
           accessorKey: 'quotationNumber', //simple accessorKey pointing to flat data
@@ -350,11 +371,26 @@ export default function UpdatePO(props) {
           accessorKey: 'drawing', //simple accessorKey pointing to flat data
         },
         {
-          header: 'จำนวน',
+          header: 'จำนวนทั้งหมด',
           accessorKey: 'quantity', //simple accessorKey pointing to flat data
           Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
 
         },
+        {
+          header: 'สถานะ',
+          accessorKey: 'quantity', //simple accessorKey pointing to flat data
+          Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
+            <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
+            <button className="btn btn-success btn-xs">เสร็จสิ้น</button>
+
+        },
+        {
+          header: 'จำนวนที่เสร็จสิ้น',
+          accessorKey: 'finishedQuantity', //simple accessorKey pointing to flat data
+          Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
+
+        },
+
         {
           header: 'ราคาต่อหน่วย',
           accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
@@ -450,10 +486,64 @@ export default function UpdatePO(props) {
     })
   }
 
-  const deDeletePoDetail = (purchaseOrderDetailNumber) => {
+  const deDeletePoDetail = (purchaseOrderDetailNumber_) => {
     Swal.fire({
       title: 'โปรดยืนยัน?',
-      text: "ต้องการลบรายละเอียดคำสั่งซื้อเลขที่ " + purchaseOrderDetailNumber,
+      text: "ต้องการลบรายละเอียดคำสั่งซื้อเลขที่ " + purchaseOrderDetailNumber_,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonText: 'ลบเลย'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setisLoad(true)
+        const response = await httpClient.patch(apiName.purchaseOrder.detail,
+          {
+            purchaseOrderDetailNumber: purchaseOrderDetailNumber_,
+            isDeleted: true
+          }
+        )
+        setisLoad(false)
+        if (response.data.api_result == OK) {
+          Swal.fire(
+            `สำเร็จ`,
+            `ลบรายละเอียดคำสั่งซื้อเลขที่ ${purchaseOrderDetailNumber_} สำเร็จ`,
+            'success'
+          ).then(() => doGetPoDetail())
+        } else {
+          Swal.fire(
+            `ล้มเหลว`,
+            `ลบรายละเอียดคำสั่งซื้อเลขที่ ${purchaseOrderDetailNumber_} ล้มเหลว`,
+            'error'
+          )
+        }
+
+
+
+      }
+    })
+  }
+
+  const prepareUpdatePoDetail = (purchaseOrderDetailNumber_) => {
+    setmodalStatus('edit')
+    openModal()
+    const poDetail = _.filter(poDetails, { purchaseOrderDetailNumber: purchaseOrderDetailNumber_ })
+    setpurchaseOrderDetailNumber(purchaseOrderDetailNumber_)
+    setdescription(poDetail[0].description)
+    setquotationNumber(poDetail[0].quotationNumber)
+    setdrawing(poDetail[0].drawing)
+    setquantity(poDetail[0].quantity)
+    setunitPrice(poDetail[0].unitPrice)
+    setComment(poDetail[0].comment)
+    setfinishedQuantity(poDetail[0].finishedQuantity)
+  }
+
+  const doUpdatePoDetail = () => {
+    Swal.fire({
+      title: 'โปรดยืนยัน?',
+      text: "ต้องการแก้ไขรายละเอียดคำสั่งซื้อ?",
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -466,20 +556,27 @@ export default function UpdatePO(props) {
         const response = await httpClient.patch(apiName.purchaseOrder.detail,
           {
             purchaseOrderDetailNumber,
-            isDeleted: true
+            quotationNumber,
+            drawing,
+            description,
+            comment,
+            quantity,
+            unitPrice,
+            finishedQuantity,
+            updatedBy: localStorage.getItem(key.user_id),
           }
         )
         setisLoad(false)
         if (response.data.api_result == OK) {
           Swal.fire(
             `สำเร็จ`,
-            `ลบรายละเอียดคำสั่งซื้อเลขที่ ${purchaseOrderDetailNumber} สำเร็จ`,
+            `แก้ไขรายละเอียดคำสั่งซื้อสำเร็จ`,
             'success'
-          ).then(() => doGetPoDetail())
+          ).then(() => closeModal())
         } else {
           Swal.fire(
             `ล้มเหลว`,
-            `ลบรายละเอียดคำสั่งซื้อเลขที่ ${purchaseOrderDetailNumber} ล้มเหลว`,
+            `แก้ไขรายละเอียดคำสั่งซื้อล้มเหลว`,
             'error'
           )
         }
@@ -490,8 +587,19 @@ export default function UpdatePO(props) {
     })
   }
 
-  const doUpdatePoDetail = (purchaseOrderDetailNumber) => {
-
+  const generatePoName = async (customer_, purchaseOrderDate_) => {
+    const _purchaseOrderDate = purchaseOrderDate_ ? purchaseOrderDate_ : purchaseOrderDate
+    const _customer = customer_ ? customer_ : customer
+    let autoGeneratePoName = ''
+    if (_purchaseOrderDate != null && _customer != null && _customer != '') {
+      setisLoad(true)
+      const response = await httpClient.post(apiName.purchaseOrder.generatePoNumber, { _purchaseOrderDate, _customer })
+      setisLoad(false)
+      if (response.data.api_result == OK) {
+        autoGeneratePoName = `${("000" + _customer).slice(-4)}_${moment(_purchaseOrderDate).format('MMYYYY')}_${("000" + response.data.result).slice(-4)}`
+        setpurchaseOrderName(autoGeneratePoName)
+      }
+    }
   }
 
   return (

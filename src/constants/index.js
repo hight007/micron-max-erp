@@ -39,6 +39,8 @@ export const apiName = {
     detail : 'purchaseOrder/detail/',
     get: 'purchaseOrder/get/',
     listPo : 'purchaseOrder/listPo/',
+    jobTracking : 'purchaseOrder/jobTracking/',
+    generatePoNumber : 'purchaseOrder/generatePoNumber/',
   },
   master: {
     customer: 'master/customer/',

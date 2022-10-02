@@ -45,7 +45,10 @@ export default function CreatePO() {
           ชื่อลูกค้า (Customer)</label>
         <select
           value={customer}
-          onChange={(e) => setcustomer(e.target.value)}
+          onChange={async (e) => {
+            setcustomer(e.target.value)
+            generatePoName(e.target.value, null);
+          }}
           required
           className="form-control" >
           <option value="">---เลือกลูกค้า---</option>
@@ -65,7 +68,10 @@ export default function CreatePO() {
       <div className="form-group col-sm-6">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
-        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => setpurchaseOrderDate(moment(date).startOf('D').toDate())} />
+        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
+          setpurchaseOrderDate(moment(date).startOf('D').toDate())
+          generatePoName(null, moment(date).startOf('D').toDate())
+        }} />
 
       </div>
       <div className="form-group col-sm-6">
@@ -115,6 +121,21 @@ export default function CreatePO() {
     setcommitDate(null)
     setcontactNumber('')
     setcustomer('')
+  }
+
+  const generatePoName = async (customer_, purchaseOrderDate_) => {
+    const _purchaseOrderDate = purchaseOrderDate_ ? purchaseOrderDate_ : purchaseOrderDate
+    const _customer = customer_ ? customer_ : customer
+    let autoGeneratePoName = ''
+    if (_purchaseOrderDate != null && _customer != null && _customer != '') {
+      setisLoad(true)
+      const response = await httpClient.post(apiName.purchaseOrder.generatePoNumber, { _purchaseOrderDate , _customer})
+      setisLoad(false)
+      if (response.data.api_result == OK) {
+        autoGeneratePoName = `${("000" + _customer).slice(-4)}_${moment(_purchaseOrderDate).format('MMYYYY')}_${("000" + response.data.result).slice(-4)}`
+        setpurchaseOrderName(autoGeneratePoName)
+      }
+    }
   }
 
   const doCreatePO = () => {
