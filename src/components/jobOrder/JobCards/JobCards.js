@@ -8,6 +8,7 @@ import './JobCards.css'
 import moment from 'moment/moment';
 import QRCode from "react-qr-code";
 import LoadingScreen from '../../main/LoadingScreen';
+import _ from 'lodash';
 
 export default function JobCards(props) {
   const params = useParams();
@@ -63,7 +64,7 @@ export default function JobCards(props) {
                     ref={componentRef} />
                 </div>
                 <div className="card-footer">
-                  
+
                 </div>
               </div>
             </div>
@@ -90,7 +91,7 @@ class ComponentToPrint extends Component {
                 size={64}
                 // style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 value={item.purchaseOrderName}
-                // viewBox={`0 0 256 256`}
+              // viewBox={`0 0 256 256`}
               />
             </th>
           </tr>
@@ -109,19 +110,20 @@ class ComponentToPrint extends Component {
       )
 
       const renderTableBody = (data, purchaseOrderName, commitDate) => {
-        console.log('data', data);
-        if (data) {
-          return data.tbPurchaseOrderDetails.map((item, index) => (
 
-            <tr>
-              <td>{item.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
-              <td>{purchaseOrderName}</td>
-              <td>{item.drawing}</td>
-              <td>{item.description}</td>
-              <td>{item.quantity}</td>
-              <td>{moment(commitDate).format('DD MMM YY')}</td>
-            </tr>
-          ))
+        if (data) {
+          return data.tbPurchaseOrderDetails.map((item, index) => {
+            return (
+              <tr>
+                <td>{item.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
+                <td>{purchaseOrderName}</td>
+                <td>{item.drawing}</td>
+                <td>{item.description}</td>
+                <td>{item.quantity}</td>
+                <td>{moment(commitDate).format('DD MMM YY')}</td>
+              </tr>
+            )
+          })
         }
       }
 
@@ -158,7 +160,7 @@ class ComponentToPrint extends Component {
         ))
       }
     }
-    
+
     return (
       <div>
 

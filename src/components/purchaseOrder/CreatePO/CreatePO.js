@@ -47,7 +47,7 @@ export default function CreatePO() {
           value={customer}
           onChange={async (e) => {
             setcustomer(e.target.value)
-            generatePoName(e.target.value, null);
+            // generatePoName(e.target.value, null);
           }}
           required
           className="form-control" >
@@ -70,7 +70,7 @@ export default function CreatePO() {
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
         <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
           setpurchaseOrderDate(moment(date).startOf('D').toDate())
-          generatePoName(null, moment(date).startOf('D').toDate())
+          // generatePoName(null, moment(date).startOf('D').toDate())
         }} />
 
       </div>
@@ -123,20 +123,7 @@ export default function CreatePO() {
     setcustomer('')
   }
 
-  const generatePoName = async (customer_, purchaseOrderDate_) => {
-    const _purchaseOrderDate = purchaseOrderDate_ ? purchaseOrderDate_ : purchaseOrderDate
-    const _customer = customer_ ? customer_ : customer
-    let autoGeneratePoName = ''
-    if (_purchaseOrderDate != null && _customer != null && _customer != '') {
-      setisLoad(true)
-      const response = await httpClient.post(apiName.purchaseOrder.generatePoNumber, { _purchaseOrderDate , _customer})
-      setisLoad(false)
-      if (response.data.api_result == OK) {
-        autoGeneratePoName = `${("000" + _customer).slice(-4)}_${moment(_purchaseOrderDate).format('MMYYYY')}_${("000" + response.data.result).slice(-4)}`
-        setpurchaseOrderName(autoGeneratePoName)
-      }
-    }
-  }
+
 
   const doCreatePO = () => {
     Swal.fire({

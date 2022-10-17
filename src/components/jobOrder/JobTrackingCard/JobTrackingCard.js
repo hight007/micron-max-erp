@@ -112,7 +112,7 @@ class ComponentToPrint extends Component {
                 size={16}
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
               <br />
-              {item['tbPurchaseOrderDetails.drawing']}</td>
+              {item['tbPurchaseOrderDetails.purchaseOrderDetailName']}</td>
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.quantity'] - item['tbPurchaseOrderDetails.finishedQuantity']}</td>
             <td>{item['tbUser.username']}</td>

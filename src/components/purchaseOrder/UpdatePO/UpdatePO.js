@@ -32,6 +32,7 @@ export default function UpdatePO(props) {
 
   //PO detail
   const [purchaseOrderDetailNumber, setpurchaseOrderDetailNumber] = useState('')
+  const [purchaseOrderDetailName, setpurchaseOrderDetailName] = useState('')
   const [quotationNumber, setquotationNumber] = useState('')
   const [drawing, setdrawing] = useState('')
   const [quantity, setquantity] = useState('')
@@ -260,6 +261,51 @@ export default function UpdatePO(props) {
     setmodalIsOpen(true)
   }
 
+  const doDeletePo = (purchaseOrderNumber, purchaseOrderName_) => {
+    Swal.fire({
+      title: 'โปรดยืนยัน',
+      text: `ต้องการลบคำสั่งซื้อ ${purchaseOrderName_}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setisLoad(true)
+          const result = await httpClient.delete(apiName.purchaseOrder.po,
+            {
+              data: { purchaseOrderNumber }
+            }
+          )
+          setisLoad(false)
+          if (result.data.api_result == OK) {
+            Swal.fire({
+              icon: 'success',
+              title: 'สำเร็จ',
+              text: `ลบคำสั่งซื้อ ${purchaseOrderName_} สำเร็จ`
+            }).then(() => {}
+            );
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'ล้มเหลว',
+              text: `ลบสั่งซื้อ ${purchaseOrderName_} ล้มเหลว`
+            })
+          }
+        } catch (error) {
+          console.log(error);
+
+        } finally {
+          setisLoad(false)
+        }
+      }
+    })
+
+  }
+  
   const renderModalInputPoDetails = () => {
     return <Modal
       isOpen={modalIsOpen}
@@ -290,7 +336,12 @@ export default function UpdatePO(props) {
               modalStatus == 'add' ? doAddPoDetail() : doUpdatePoDetail()
             }}>
               <div className="card-body row">
-
+                {
+                  modalStatus == 'add' ? <></> : <div className="form-group col-sm-12">
+                    <label >เลขที่รายละเอียดคำสั่งซื้อ (Purchase order detail Number)</label>
+                    <input value={purchaseOrderDetailName} required disabled className="form-control" />
+                  </div>
+                }
                 <div className="form-group col-sm-6">
                   <label >เลขที่ใบเสนอราคา (Quotation Number)</label>
                   <input value={quotationNumber} onChange={(e) => setquotationNumber(e.target.value)} required className="form-control" />
@@ -359,7 +410,7 @@ export default function UpdatePO(props) {
         },
         {
           header: 'เลขที่รายละเอียดคำสั่งซื้อ',
-          accessorKey: 'purchaseOrderDetailNumber', //simple accessorKey pointing to flat data
+          accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
         },
 
         {
@@ -452,6 +503,7 @@ export default function UpdatePO(props) {
           setisLoad(true)
           const response = await httpClient.post(apiName.purchaseOrder.detail,
             {
+              purchaseOrderDetailName,
               purchaseOrderNumber: params.poNumber,
               quotationNumber,
               drawing,
@@ -530,6 +582,7 @@ export default function UpdatePO(props) {
     setmodalStatus('edit')
     openModal()
     const poDetail = _.filter(poDetails, { purchaseOrderDetailNumber: purchaseOrderDetailNumber_ })
+    setpurchaseOrderDetailName(poDetail[0].purchaseOrderDetailName)
     setpurchaseOrderDetailNumber(purchaseOrderDetailNumber_)
     setdescription(poDetail[0].description)
     setquotationNumber(poDetail[0].quotationNumber)
@@ -549,7 +602,7 @@ export default function UpdatePO(props) {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       cancelButtonText: 'ยกเลิก',
-      confirmButtonText: 'ลบเลย'
+      confirmButtonText: 'แก้ไข'
     }).then(async (result) => {
       if (result.isConfirmed) {
         setisLoad(true)
@@ -587,20 +640,20 @@ export default function UpdatePO(props) {
     })
   }
 
-  const generatePoName = async (customer_, purchaseOrderDate_) => {
-    const _purchaseOrderDate = purchaseOrderDate_ ? purchaseOrderDate_ : purchaseOrderDate
-    const _customer = customer_ ? customer_ : customer
-    let autoGeneratePoName = ''
-    if (_purchaseOrderDate != null && _customer != null && _customer != '') {
-      setisLoad(true)
-      const response = await httpClient.post(apiName.purchaseOrder.generatePoNumber, { _purchaseOrderDate, _customer })
-      setisLoad(false)
-      if (response.data.api_result == OK) {
-        autoGeneratePoName = `${("000" + _customer).slice(-4)}_${moment(_purchaseOrderDate).format('MMYYYY')}_${("000" + response.data.result).slice(-4)}`
-        setpurchaseOrderName(autoGeneratePoName)
-      }
-    }
-  }
+  // const generatePoDetailName = async () => {
+
+  //   let autoGeneratePoName = ''
+  //   if (purchaseOrderDate != null ) {
+  //     setisLoad(true)
+  //     const response = await httpClient.post(apiName.purchaseOrder.generatePoDetailNumber, { purchaseOrderNumber: params.poNumber })
+  //     setisLoad(false)
+  //     if (response.data.api_result == OK) {
+  //       autoGeneratePoName = `${("000" + customer).slice(-4)}_${purchaseOrderName}_${moment(purchaseOrderDate).format('MMYYYY')}_${("000" + response.data.result).slice(-4)}`
+  //       console.log(autoGeneratePoName);
+  //       setpurchaseOrderDetailName(autoGeneratePoName)
+  //     }
+  //   }
+  // }
 
   return (
     <div className="content-wrapper">
@@ -629,7 +682,10 @@ export default function UpdatePO(props) {
             <div className="col-md-12">
               <div className="card card-primary">
                 <div className="card-header text-center">
-                  <button className="btn btn-primary " onClick={() => { openModal() }}>
+                  <button className="btn btn-primary " onClick={() => {
+                    openModal()
+                    // generatePoDetailName()
+                  }}>
                     <i className="fas fa-cart-plus" style={{ marginRight: 10 }} />
                     เพิ่มรายการคำสั่งซื้อ
                   </button>

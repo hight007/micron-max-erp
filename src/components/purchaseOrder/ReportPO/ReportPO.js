@@ -12,9 +12,11 @@ import { ExportToCsv } from 'export-to-csv'; //or use your library of choice her
 import { Box, Button } from '@mui/material';
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import { NumericFormat } from "react-number-format";
 
 export default function ReportPO() {
   const [isLoad, setisLoad] = useState(false)
+  const [users, setusers] = useState([])
 
   const [dateFrom, setdateFrom] = useState(moment().add(-1, 'M').toDate())
   const [dateTo, setdateTo] = useState(moment().endOf('D').toDate())
@@ -29,14 +31,26 @@ export default function ReportPO() {
 
   useEffect(() => {
     doGetCustomer()
+    getUsers()
     doGetPurchaseOrder()
   }, [])
+
+  const getUsers = async () => {
+    try {
+      const response = await httpClient.get(apiName.user.allUsers)
+      if (response.data.api_result === OK) {
+        setusers(response.data.result)
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const doGetCustomer = async () => {
     try {
       const response = await httpClient.get(apiName.master.customer + 'getAll')
       if (response.data.api_result === OK) {
-        console.log(response.data.result);
         setcustomers(response.data.result)
       }
 
@@ -208,11 +222,11 @@ export default function ReportPO() {
             <Link style={{ marginRight: 10 }} className="btn btn-default" to={`/PurchaseOrder/UpdatePO/${cell.getValue()}`} target="_blank"  >
               <i className="fas fa-edit" />
             </Link>
-            <button className="btn btn-default" onClick={() => {
+            {/* <button className="btn btn-default" onClick={() => {
               doDeletePo(cell.getValue(), row.original.purchaseOrderName)
             }}>
               <i className="fas fa-trash-alt" />
-            </button>
+            </button> */}
           </div>
         )
       },
@@ -220,14 +234,43 @@ export default function ReportPO() {
         header: 'ใบสั่งซื้อ (Purchase Order)',
         accessorKey: 'purchaseOrderName', //simple accessorKey pointing to flat data
       },
-      {
-        header: 'จำนวนรายการ',
-        accessorKey: 'countDetails', //simple accessorKey pointing to flat data
-      },
 
       {
         header: 'ชื่อลูกค้า (Customer name)',
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'เลขที่รายละเอียดคำสั่งซื้อ',
+        accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
+      },
+
+      {
+        header: 'จำนวนทั้งหมด',
+        accessorKey: 'quantity', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
+
+      },
+      {
+        header: 'สถานะ',
+        accessorKey: 'quantity', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
+          <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
+          <button className="btn btn-success btn-xs">เสร็จสิ้น</button>
+
+      },
+      {
+        header: 'จำนวนที่เสร็จสิ้น',
+        accessorKey: 'finishedQuantity', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
+
+      },
+      {
+        header: 'เลขที่ใบเสนอราคา',
+        accessorKey: 'quotationNumber', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'แบบแปลน',
+        accessorKey: 'drawing', //simple accessorKey pointing to flat data
       },
       {
         header: 'วันที่ออกใบสั่งซื้อ (Purchase Order date)',
@@ -261,6 +304,7 @@ export default function ReportPO() {
       {
         header: 'เพิ่มโดย (Created By)',
         accessorKey: 'createdBy', //simple accessorKey pointing to flat data
+        // Cell: ({ cell, row }) => findUser(cell.getValue()),
       },
       {
         header: 'แก้ไขเมื่อ (Updated At)',
@@ -270,6 +314,7 @@ export default function ReportPO() {
       {
         header: 'แก้ไขโดย (Updated By)',
         accessorKey: 'updatedBy', //simple accessorKey pointing to flat data
+        // Cell: ({ cell, row }) => findUser(cell.getValue()),
       },
 
 
@@ -293,13 +338,13 @@ export default function ReportPO() {
 
     const handlePrint = (data) => {
       const _data = _.map(data, 'original');
-      const _data_ = _.map(_data, 'purchaseOrderNumber');
+      const _data_ = _.map(_data, 'purchaseOrderDetailNumber');
       window.open('/JobOrder/JobCards/' + JSON.stringify(_data_), '_blank');
     }
 
     const handleJobTracking = (data) => {
       const _data = _.map(data, 'original');
-      const _data_ = _.map(_data, 'purchaseOrderNumber');
+      const _data_ = _.map(_data, 'purchaseOrderDetailNumber');
       window.open('/JobOrder/JobTrackingCards/' + JSON.stringify(_data_), '_blank');
     }
 
@@ -311,6 +356,9 @@ export default function ReportPO() {
             data={purchaseData}
             enableColumnOrdering
             enableRowSelection
+            enableStickyHeader
+            enableStickyFooter
+            muiTableContainerProps={{ sx: { maxHeight: 500 } }}
             positionToolbarAlertBanner="bottom"
             renderTopToolbarCustomActions={({ table }) => (
               <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
@@ -352,10 +400,76 @@ export default function ReportPO() {
                 </button>
               </Box>
             )}
+            // renderDetailPanel={({ row }) => (
+            //   <Box>
+            //     {renderPurchaseOrderDetailsTable(row.original.tbPurchaseOrderDetails)}
+            //   </Box>
+            // )}
           />
         </div>
       </>
     }
+  }
+
+  const renderPurchaseOrderDetailsTable = (data) => {
+
+    data = _.filter(data, { isDeleted: false })
+    const header = () => {
+      return (
+        <tr>
+          <th>purchaseOrderDetailName</th>
+          <th>quantity</th>
+          <th>finishedQuantity</th>
+          <th>status</th>
+          <th>drawing</th>
+          <th>quotationNumber</th>
+          <th>description</th>
+          <th>comment</th>
+          <th>createdAt</th>
+          <th>createdBy</th>
+          <th>updatedAt</th>
+          <th>updatedBy</th>
+
+        </tr>
+      )
+    }
+    const body = (data) => {
+      return data.map((item, index) => (
+        <tr>
+          <td>{item.purchaseOrderDetailName}</td>
+          <td>{<NumericFormat thousandSeparator="," value={item.quantity} displayType="text" />}</td>
+          <td>{<NumericFormat thousandSeparator="," value={item.finishedQuantity} displayType="text" />}</td>
+          <td>{item.quantity > item.finishedQuantity ?
+            <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
+            <button className="btn btn-success btn-xs">เสร็จสิ้น</button>}
+          </td>
+          <td>{item.drawing}</td>
+          <td>{item.quotationNumber}</td>
+          <td>{item.description}</td>
+          <td>{item.comment}</td>
+          <td>{moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')}</td>
+          <td>{findUser(item.createdBy) }</td>
+          <td>{moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')}</td>
+          <td>{findUser(item.updatedBy) }</td>
+        </tr>
+      ))
+    }
+    if (data.length > 0) {
+      
+      console.log(data);
+      return (
+        <table className="table text-nowrap" style={{ backgroundColor: '#F0F0F0', width: '60%' }}>
+          <thead>
+            {header()}
+          </thead>
+          <tbody>
+            {body(data)}
+          </tbody>
+        </table>
+      )
+    }
+
+
   }
 
   const doDeletePo = (purchaseOrderNumber, purchaseOrderName_) => {
@@ -402,6 +516,14 @@ export default function ReportPO() {
 
   }
 
+  const findUser = (user) => {
+    if (user != null && users.length > 0) {
+      const createdUser = _.find(users, { user_id: user })
+      return createdUser.username
+    } else {
+      return ''
+    }
+  }
 
   return (
     <div className="content-wrapper "><ContentHeader header="รายงานคำสั่งซื้อ (Report Purchase Order)" />
