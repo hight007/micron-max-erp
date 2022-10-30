@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { key } from "../../../constants";
 import FontSizeChanger from "react-font-size-changer";
+import { BrowserView, MobileView } from 'react-device-detect';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -18,15 +19,17 @@ const Header = () => {
 
   return (
     <nav className="main-header navbar navbar-expand navbar-primary navbar-dark bg-main">
-      <ul className="navbar-nav">
-        <li className="nav-item">
-          <a className="nav-link" data-widget="pushmenu" role="button">
-            <i className="fas fa-bars" />
-          </a>
-        </li>
-      </ul>
+      <BrowserView>
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <a className="nav-link" data-widget="pushmenu" role="button">
+              <i className="fas fa-bars" />
+            </a>
+          </li>
+        </ul>
+      </BrowserView>
       <ul className="navbar-nav ml-auto">
-        
+
 
         <div style={{ cursor: "pointer" }}>
           <FontSizeChanger
@@ -78,6 +81,15 @@ const Header = () => {
             <i className="fas fa-expand-arrows-alt" />
           </a>
         </li>
+        <MobileView>
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              <a className="nav-link" data-widget="pushmenu" role="button">
+                <i className="fas fa-bars" />
+              </a>
+            </li>
+          </ul>
+        </MobileView>
       </ul>
     </nav>
   );

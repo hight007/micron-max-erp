@@ -80,7 +80,6 @@ export default function CreatePO() {
         <input
           value={purchaseOrderName}
           onChange={(e) => setpurchaseOrderName(e.target.value)}
-          required
           className="form-control"
         />
       </div>

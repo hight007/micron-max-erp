@@ -168,7 +168,7 @@ const Sidebar = () => {
           {"_"}
         </span>
       </a>
-      <div className="sidebar os-host os-theme-light os-host-resize-disabled os-host-transition os-host-overflow os-host-overflow-y os-host-scrollbar-horizontal-hidden">
+      <div className="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-transition">
         <div className="os-resize-observer-host observed">
           <div
             className="os-resize-observer"

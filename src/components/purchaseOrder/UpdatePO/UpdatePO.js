@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import ContentHeader from "../../main/ContentHeader/ContentHeader";
 import { apiName, key, OK } from "../../../constants";
@@ -42,6 +42,8 @@ export default function UpdatePO(props) {
   const [finishedQuantity, setfinishedQuantity] = useState('')
 
   const params = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     doGetPo()
@@ -286,7 +288,7 @@ export default function UpdatePO(props) {
               icon: 'success',
               title: 'สำเร็จ',
               text: `ลบคำสั่งซื้อ ${purchaseOrderName_} สำเร็จ`
-            }).then(() => {}
+            }).then(() => { navigate("/PurchaseOrder/ReportPO")}
             );
           } else {
             Swal.fire({
@@ -674,6 +676,7 @@ export default function UpdatePO(props) {
                   </div>
                   <div className="card-footer">
                     <button type="submit" className="btn btn-warning">แก้ไข</button>
+                    <button type="button" style={{ marginLeft: 10 }} className="btn btn-danger" onClick={() => doDeletePo(params.poNumber,purchaseOrderName)}>ลบ</button>
                     <button type="reset" onClick={() => closeModal()} className="btn btn-default float-right">ยกเลิก</button>
                   </div>
                 </form>

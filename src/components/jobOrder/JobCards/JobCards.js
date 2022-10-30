@@ -79,48 +79,85 @@ export default function JobCards(props) {
 
 
 class ComponentToPrint extends Component {
-  render() {
-    const renderPageContent = (item, index) => {
 
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      users: []
+    };
+  };
+
+  componentDidMount = () => {
+    this.getUsers();
+  }
+
+  getUsers = async () => {
+    try {
+      const response = await httpClient.get(apiName.user.allUsers)
+      if (response.data.api_result === OK) {
+        this.setState({ users: response.data.result })
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  render() {
+    const findUser = (user) => {
+      if (user != null && this.state.users.length > 0) {
+        const createdUser = _.find(this.state.users, { user_id: user })
+        return createdUser.username
+      } else {
+        return ''
+      }
+    }
+
+    const renderPageContent = (item, index) => {
       const renderHeader = () => (
         <thead>
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="4">ORDER DATE : {moment().format('DD MMM YYYY')}</th>
-            <th colspan="2" rowspan="2">
+            <th style={{ textAlign: 'left' }} colspan="8">ORDER DATE : {moment().format('DD MMM YYYY')}</th>
+            {/* <th colspan="2" rowspan="2">
               <QRCode
                 size={64}
                 // style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 value={item.purchaseOrderName}
               // viewBox={`0 0 256 256`}
               />
-            </th>
+            </th> */}
           </tr>
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="4">Customer : {item.tbCustomer.customerName}</th>
+            <th style={{ textAlign: 'left' }} colspan="8">Customer : {item[0]["tbCustomer.customerName"]}</th>
           </tr>
           <tr>
             <th style={{ width: 10 }}>ITEM</th>
             <th>PO#</th>
             <th>CODE</th>
-            <th style={{ width: '30%' }}>DESCRIPTION</th>
+            <th>ชื่อเจ้าของงาน</th>
+            <th>เบอร์ติดต่อ</th>
+            <th>DESCRIPTION</th>
             <th>QTY</th>
             <th>นัดส่งงาน</th>
           </tr>
         </thead>
       )
 
-      const renderTableBody = (data, purchaseOrderName, commitDate) => {
+      const renderTableBody = (data) => {
 
         if (data) {
-          return data.tbPurchaseOrderDetails.map((item, index) => {
+          return data.map((item_, index) => {
             return (
               <tr>
-                <td>{item.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
-                <td>{purchaseOrderName}</td>
-                <td>{item.drawing}</td>
-                <td>{item.description}</td>
-                <td>{item.quantity}</td>
-                <td>{moment(commitDate).format('DD MMM YY')}</td>
+                <td>{item_.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
+                <td>{item_.purchaseOrderName}</td>
+                <td>{item_["tbPurchaseOrderDetails.drawing"]}</td>
+                <td>{findUser(item_["tbPurchaseOrderDetails.createdBy"])}</td>
+                <td>{item_.contactNumber}</td>
+                <td>{item_["tbPurchaseOrderDetails.description"]}</td>
+                <td>{item_["tbPurchaseOrderDetails.quantity"]}</td>
+                <td>{moment(item_.commitDate).format('DD MMM YY')}</td>
               </tr>
             )
           })
@@ -138,7 +175,7 @@ class ComponentToPrint extends Component {
                 <table className="table table-bordered">
                   {renderHeader()}
                   <tbody>
-                    {renderTableBody(item, item.purchaseOrderName, item.commitDate)}
+                    {renderTableBody(item)}
                   </tbody>
 
                 </table>
@@ -154,8 +191,8 @@ class ComponentToPrint extends Component {
     const renderContent = () => {
       const data = this.props.listPo
       if (data) {
-        // console.log(data);
-        return data.map((item, index) => (
+
+        return _(data).groupBy('customerId').values().value().map((item, index) => (
           renderPageContent(item, index)
         ))
       }

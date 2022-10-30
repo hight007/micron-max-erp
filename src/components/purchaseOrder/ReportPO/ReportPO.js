@@ -21,10 +21,15 @@ export default function ReportPO() {
   const [dateFrom, setdateFrom] = useState(moment().add(-1, 'M').toDate())
   const [dateTo, setdateTo] = useState(moment().endOf('D').toDate())
   const [dateType, setdateType] = useState('')
+  
 
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
   const [invoiceNumber, setinvoiceNumber] = useState('')
   const [customer, setcustomer] = useState('')
+  const [drawing, setdrawing] = useState('')
+  const [quotationNumber, setquotationNumber] = useState('')
+  const [createdBy, setcreatedBy] = useState('')
+  const [description, setdescription] = useState('')
 
   const [purchaseData, setpurchaseData] = useState([])
   const [customers, setcustomers] = useState([])
@@ -85,9 +90,20 @@ export default function ReportPO() {
       if (invoiceNumber != '' && invoiceNumber != null) {
         condition.invoiceNumber = invoiceNumber
       }
-
       if (customer != '' && customer != null) {
         condition.customer = customer
+      }
+      if (drawing != '' && drawing != null) {
+        condition.drawing = drawing
+      }
+      if (quotationNumber != '' && quotationNumber != null) {
+        condition.quotationNumber = quotationNumber
+      }
+      if (createdBy != '' && createdBy != null) {
+        condition.createdBy = createdBy
+      }
+      if (description != '' && description != null) {
+        condition.description = description
       }
 
       const response = await httpClient.post(apiName.purchaseOrder.get, { condition })
@@ -116,6 +132,92 @@ export default function ReportPO() {
 
     return (
       <>
+        
+        <div className="col-md-12">
+          <div className="card card-primary">
+            <div className="card-header">
+              <div className="card-title">
+                ค้นหาตามชื่อ (Search by name)
+              </div>
+            </div>
+            <div className="card-body row">
+              <div className="form-group col-sm-4 resizeable">
+                <i className="fas fa-user-check" style={{ marginRight: 10 }} />
+                <label >
+                  ชื่อลูกค้า (Customer)</label>
+                <select
+                  value={customer}
+                  onChange={(e) => setcustomer(e.target.value)}
+                  required
+                  className="form-control" >
+                  <option value="">---เลือกลูกค้า---</option>
+                  {renderCustomerOption()}
+                </select>
+              </div>
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} />
+                <label >ใบสั่งซื้อ (Purchase Order)</label>
+                <input
+                  value={purchaseOrderName}
+                  onChange={(e) => setpurchaseOrderName(e.target.value)}
+                  className="form-control"
+                />
+              </ div>
+
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-pencil-ruler" style={{ marginRight: 10 }} />
+                <label >แบบแปลน (Drawing)</label>
+                <input
+                  value={drawing}
+                  onChange={(e) => setdrawing(e.target.value)}
+                  className="form-control"
+                />
+              </ div>
+
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-user" style={{ marginRight: 10 }} />
+                <label >ชื่อผู้สั่งซื้อ (Created by)</label>
+                <input
+                  value={createdBy}
+                  onChange={(e) => setcreatedBy(e.target.value)}
+                  className="form-control"
+                />
+              </ div>
+
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-file-signature" style={{ marginRight: 10 }} />
+                <label >เลขที่ใบเสนอราคา (Quotation Number)</label>
+                <input
+                  value={quotationNumber}
+                  onChange={(e) => setquotationNumber(e.target.value)}
+                  className="form-control"
+                />
+              </ div>
+
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-file-invoice-dollar" style={{ marginRight: 10 }} />
+                <label >
+                  เลขที่ใบส่งของ (Invoice Number)</label>
+                <input
+                  value={invoiceNumber}
+                  onChange={(e) => setinvoiceNumber(e.target.value)}
+                  required
+                  className="form-control" />
+              </div>
+
+              <div className="form-group col-md-12 resizeable">
+                <i className="fas fa-file" style={{ marginRight: 10 }} />
+                <label >รายละเอียด (Description)</label>
+                <input
+                  value={description}
+                  onChange={(e) => setdescription(e.target.value)}
+                  className="form-control"
+                />
+              </ div>
+              
+            </div>
+          </div>
+        </div>
         <div className="col-md-12 " >
           <div className="card card-primary">
             <div className="card-header">
@@ -164,50 +266,6 @@ export default function ReportPO() {
           </div>
 
         </div>
-        <div className="col-md-12">
-          <div className="card card-primary">
-            <div className="card-header">
-              <div className="card-title">
-                ค้นหาตามชื่อ (Search by name)
-              </div>
-            </div>
-            <div className="card-body row">
-              <div className="form-group col-md-6 resizeable">
-                <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} />
-                <label >ใบสั่งซื้อ (Purchase Order)</label>
-                <input
-                  value={purchaseOrderName}
-                  onChange={(e) => setpurchaseOrderName(e.target.value)}
-                  className="form-control"
-                />
-
-              </ div>
-              <div className="form-group col-md-6 resizeable">
-                <i className="fas fa-file-invoice-dollar" style={{ marginRight: 10 }} />
-                <label >
-                  เลขที่ใบส่งของ (Invoice Number)</label>
-                <input
-                  value={invoiceNumber}
-                  onChange={(e) => setinvoiceNumber(e.target.value)}
-                  required
-                  className="form-control" />
-              </div>
-              <div className="form-group col-sm-12">
-                <i className="fas fa-user-check" style={{ marginRight: 10 }} />
-                <label >
-                  ชื่อลูกค้า (Customer)</label>
-                <select
-                  value={customer}
-                  onChange={(e) => setcustomer(e.target.value)}
-                  required
-                  className="form-control" >
-                  <option value="">---เลือกลูกค้า---</option>
-                  {renderCustomerOption()}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
       </>
     )
   }
@@ -222,36 +280,43 @@ export default function ReportPO() {
             <Link style={{ marginRight: 10 }} className="btn btn-default" to={`/PurchaseOrder/UpdatePO/${cell.getValue()}`} target="_blank"  >
               <i className="fas fa-edit" />
             </Link>
-            {/* <button className="btn btn-default" onClick={() => {
-              doDeletePo(cell.getValue(), row.original.purchaseOrderName)
-            }}>
-              <i className="fas fa-trash-alt" />
-            </button> */}
           </div>
         )
       },
       {
-        header: 'ใบสั่งซื้อ (Purchase Order)',
+        header: 'No.',
+        accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'DATE',
+        accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'PO#',
         accessorKey: 'purchaseOrderName', //simple accessorKey pointing to flat data
       },
-
       {
-        header: 'ชื่อลูกค้า (Customer name)',
+        header: 'CUSTOMER',
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
       },
       {
-        header: 'เลขที่รายละเอียดคำสั่งซื้อ',
-        accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
+        header: 'DRAWING#',
+        accessorKey: 'drawing', //simple accessorKey pointing to flat data
       },
-
       {
-        header: 'จำนวนทั้งหมด',
+        header: 'DESCRIPTION',
+        accessorKey: 'description', //simple accessorKey pointing to flat data
+      },
+      {
+        header: 'QTY',
         accessorKey: 'quantity', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
-
+        Cell: ({ cell, row }) => <>
+          <NumericFormat thousandSeparator="," value={row.original.finishedQuantity} displayType="text" />/<NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
+        </>
       },
       {
-        header: 'สถานะ',
+        header: 'STATE',
         accessorKey: 'quantity', //simple accessorKey pointing to flat data
         Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
           <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
@@ -259,68 +324,54 @@ export default function ReportPO() {
 
       },
       {
-        header: 'จำนวนที่เสร็จสิ้น',
-        accessorKey: 'finishedQuantity', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
-
-      },
-      {
-        header: 'เลขที่ใบเสนอราคา',
+        header: 'MICRON#',
         accessorKey: 'quotationNumber', //simple accessorKey pointing to flat data
       },
       {
-        header: 'แบบแปลน',
-        accessorKey: 'drawing', //simple accessorKey pointing to flat data
+        header: 'NAME',
+        accessorKey: 'createdBy', //simple accessorKey pointing to flat data
       },
       {
-        header: 'วันที่ออกใบสั่งซื้อ (Purchase Order date)',
-        accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+        header: 'Ext',
+        accessorKey: 'contactNumber', //simple accessorKey pointing to flat data
       },
       {
-        header: 'วันที่ขอใบสั่งซื้อ (Request date)',
-        accessorKey: 'requestDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
-      },
-      {
-        header: 'วันที่นัดส่งงาน (Commit date)',
+        header: 'Commited Date',
         accessorKey: 'commitDate', //simple accessorKey pointing to flat data
         Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
       },
       {
-        header: 'เลขที่ใบส่งของ (Invoice Number)',
+        header: 'PO-DATE',
+        accessorKey: 'requestDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'Inv. DATE',
+        accessorKey: 'invoiceDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' ? '' : moment(cell.getValue()).format("DD-MMM-yyyy")
+      },
+      {
+        header: 'Inv. Number',
         accessorKey: 'invoiceNumber', //simple accessorKey pointing to flat data
       },
       {
-        header: 'วันที่ออกใบส่งของ (Invoice date)',
-        accessorKey: 'invoiceDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() == null ? '' : moment(cell.getValue()).format("DD-MMM-yyyy")
+        header: 'Unit Price',
+        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" /> : <></>
       },
       {
-        header: 'เพิ่มเมื่อ (Created At)',
-        accessorKey: 'createdAt', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy HH:mm:ss"),
+        header: 'Total',
+        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue() * row.original.quantity} displayType="text" /> : <></>
       },
       {
-        header: 'เพิ่มโดย (Created By)',
-        accessorKey: 'createdBy', //simple accessorKey pointing to flat data
-        // Cell: ({ cell, row }) => findUser(cell.getValue()),
+        header: 'REMARKS',
+        accessorKey: 'comment', //simple accessorKey pointing to flat data
       },
-      {
-        header: 'แก้ไขเมื่อ (Updated At)',
-        accessorKey: 'updatedAt', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy HH:mm:ss"),
-      },
-      {
-        header: 'แก้ไขโดย (Updated By)',
-        accessorKey: 'updatedBy', //simple accessorKey pointing to flat data
-        // Cell: ({ cell, row }) => findUser(cell.getValue()),
-      },
-
 
     ]
 
-    const handleExportData = () => {
+    const handleExportData = (rows) => {
       const csvOptions = {
         fieldSeparator: ',',
         quoteStrings: '"',
@@ -333,7 +384,7 @@ export default function ReportPO() {
       };
 
       const csvExporter = new ExportToCsv(csvOptions);
-      csvExporter.generateCsv(purchaseData);
+      csvExporter.generateCsv(rows.map((row) => row.original));
     };
 
     const handlePrint = (data) => {
@@ -366,7 +417,7 @@ export default function ReportPO() {
                   className="btn btn-primary"
                   onClick={(e) => {
                     e.preventDefault()
-                    handleExportData()
+                    handleExportData(table.getRowModel().rows)
                   }}
                 >
                   <i className="fas fa-file-csv" style={{ marginRight: 10 }} />

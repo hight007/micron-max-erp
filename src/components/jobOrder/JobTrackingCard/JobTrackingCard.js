@@ -79,13 +79,13 @@ class ComponentToPrint extends Component {
     const renderHeader = () => (
       <thead style={{ fontSize: 12 }}>
         <tr>
-          <th style={{ width: '5%' }}>No.</th>
+          {/* <th style={{ width: '5%' }}>No.</th> */}
+          <th style={{ width: '12%' }}>รหัส</th>
           <th style={{ width: '11%' }}>วันที่สั่ง</th>
           <th>ใบสั่งซื้อ</th>
-          <th style={{ width: '12%' }}>รหัส</th>
           <th style={{ width: '20%' }}>รายการ</th>
           <th>QTY</th>
-          <th>User</th>
+          <th>ชื่อเจ้าของงาน</th>
           <th style={{ width: '11%' }}>วันนัดส่งลูกค้า</th>
           <th style={{ width: '11%' }}>ขั้นตอนการทำงาน</th>
           <th style={{ width: '11%' }}>หมายเหตุ</th>
@@ -99,22 +99,22 @@ class ComponentToPrint extends Component {
       if (data) {
         return data.map((item, index) => (
           <tr>
-            <td>{index + 1}</td>
-            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
             <td>
-              <QRCode
-                size={16}
-                value={item.purchaseOrderName}
-              /><br />
-              {item.purchaseOrderName}</td>
-            <td>
-              <QRCode
+              {/* <QRCode
                 size={16}
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
-              <br />
-              {item['tbPurchaseOrderDetails.purchaseOrderDetailName']}</td>
+              <br /> */}
+              {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
+            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
+            <td>
+              {/* <QRCode
+                size={16}
+                value={item.purchaseOrderName}
+              /><br /> */}
+              {item.purchaseOrderName}</td>
+
             <td>{item['tbPurchaseOrderDetails.description']}</td>
-            <td>{item['tbPurchaseOrderDetails.quantity'] - item['tbPurchaseOrderDetails.finishedQuantity']}</td>
+            <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbUser.username']}</td>
             <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
             <td></td>
