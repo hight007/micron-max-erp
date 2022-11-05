@@ -44,6 +44,7 @@ export default function ReportPO() {
   const headers = [
     { label: "No.", key: "purchaseOrderDetailName" },
     { label: "DATE", key: "purchaseOrderDate" },
+    { label: "PO#", key: "purchaseOrderName" },
     { label: "DRAWING#", key: "drawing" },
     { label: "DESCRIPTION", key: "description" },
     { label: "QTY", key: "quantity" },
