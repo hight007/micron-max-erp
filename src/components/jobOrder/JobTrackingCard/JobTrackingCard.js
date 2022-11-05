@@ -77,18 +77,18 @@ export default function JobTrackingCard() {
 class ComponentToPrint extends Component {
   render() {
     const renderHeader = () => (
-      <thead style={{ fontSize: 12 }}>
+      <thead style={{ fontSize: 15 }}>
         <tr>
           {/* <th style={{ width: '5%' }}>No.</th> */}
-          <th style={{ width: '12%' }}>รหัส</th>
-          <th style={{ width: '11%' }}>วันที่สั่ง</th>
-          <th>ใบสั่งซื้อ</th>
-          <th style={{ width: '20%' }}>รายการ</th>
-          <th>QTY</th>
-          <th>ชื่อเจ้าของงาน</th>
-          <th style={{ width: '11%' }}>วันนัดส่งลูกค้า</th>
-          <th style={{ width: '11%' }}>ขั้นตอนการทำงาน</th>
-          <th style={{ width: '11%' }}>หมายเหตุ</th>
+          <th style={{ width: '5%' }}>รหัส</th>
+          <th style={{ width: '9%' }}>วันที่สั่ง</th>
+          <th style={{ width: '10%' }}>ใบสั่งซื้อ</th>
+          <th style={{ width: '18%' }}>รายการ</th>
+          <th style={{ width: '5%' }}>QTY</th>
+          <th style={{ width: '10%' }}>ชื่อเจ้าของงาน</th>
+          <th style={{ width: '9%' }}>วันนัดส่งลูกค้า</th>
+          <th >ขั้นตอนการทำงาน</th>
+          <th >หมายเหตุ</th>
         </tr>
       </thead>
     )
@@ -98,7 +98,7 @@ class ComponentToPrint extends Component {
       console.log(data);
       if (data) {
         return data.map((item, index) => (
-          <tr>
+          <tr style={{ fontSize: 12 }}>
             <td>
               {/* <QRCode
                 size={16}
@@ -115,7 +115,7 @@ class ComponentToPrint extends Component {
 
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
-            <td>{item['tbUser.username']}</td>
+            <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
             <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
             <td></td>
             <td></td>

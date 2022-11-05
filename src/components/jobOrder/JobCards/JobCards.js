@@ -118,7 +118,7 @@ class ComponentToPrint extends Component {
       const renderHeader = () => (
         <thead>
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="8">ORDER DATE : {moment().format('DD MMM YYYY')}</th>
+            <th style={{ textAlign: 'left' }} colspan="8">ORDER DATE : {moment().format('DD-MMM-YY')}</th>
             {/* <th colspan="2" rowspan="2">
               <QRCode
                 size={64}
@@ -150,14 +150,15 @@ class ComponentToPrint extends Component {
           return data.map((item_, index) => {
             return (
               <tr>
-                <td>{item_.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td>
+                {/* <td>{item_.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td> */}
+                <td>{item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
                 <td>{item_.purchaseOrderName}</td>
                 <td>{item_["tbPurchaseOrderDetails.drawing"]}</td>
-                <td>{findUser(item_["tbPurchaseOrderDetails.createdBy"])}</td>
-                <td>{item_.contactNumber}</td>
+                <td>{item_["tbPurchaseOrderDetails.orderBy"]}</td>
+                <td>{item_["tbPurchaseOrderDetails.contactNumber"]}</td>
                 <td>{item_["tbPurchaseOrderDetails.description"]}</td>
                 <td>{item_["tbPurchaseOrderDetails.quantity"]}</td>
-                <td>{moment(item_.commitDate).format('DD MMM YY')}</td>
+                <td>{moment(item_.commitDate).format('DD-MMM-YY')}</td>
               </tr>
             )
           })

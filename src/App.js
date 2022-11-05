@@ -22,9 +22,9 @@ import Login from "./components/authen/Login";
 import User from "./components/authen/User";
 
 //purchaseOrder
-import CreatePO from './components/purchaseOrder/CreatePO'
+import CreatePO from './components/purchaseOrder/CreateNewPO'
 import ReportPO from './components/purchaseOrder/ReportPO'
-import UpdatePO from './components/purchaseOrder/UpdatePO';
+import UpdatePO from './components/purchaseOrder/UpdatePO/UpdatePO';
 
 //Job Order
 import JobCard from "./components/jobOrder/JobCards"
@@ -65,7 +65,7 @@ function App() {
         {/* PurchaseOrder */}
         <Route path="/PurchaseOrder/CreatePO" element={<RequireAuth userLevel={["admin", "power"]}><CreatePO /></RequireAuth>} />
         <Route path="/PurchaseOrder/ReportPO" element={<RequireAuth><ReportPO /></RequireAuth>} />
-        <Route path="/PurchaseOrder/UpdatePO/:poNumber" element={<RequireAuth userLevel={["admin", "power"]}><UpdatePO /></RequireAuth>} />
+        <Route path="/PurchaseOrder/UpdatePO/:poDetailNumber" element={<RequireAuth userLevel={["admin", "power"]}><UpdatePO /></RequireAuth>} />
 
         {/* JobOrder */}
         <Route path="/JobOrder/JobCards/:listPo" element={<RequireAuth ><JobCard /></RequireAuth>} />

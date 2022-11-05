@@ -9,6 +9,7 @@ import moment from "moment";
 import { httpClient } from "../../../utils/HttpClient";
 import MaterialReactTable from 'material-react-table';
 import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
+import { CSVLink, CSVDownload } from "react-csv";
 import { Box, Button } from '@mui/material';
 import _ from "lodash";
 import { Link } from "react-router-dom";
@@ -21,7 +22,7 @@ export default function ReportPO() {
   const [dateFrom, setdateFrom] = useState(moment().add(-1, 'M').toDate())
   const [dateTo, setdateTo] = useState(moment().endOf('D').toDate())
   const [dateType, setdateType] = useState('')
-  
+
 
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
   const [invoiceNumber, setinvoiceNumber] = useState('')
@@ -39,6 +40,28 @@ export default function ReportPO() {
     getUsers()
     doGetPurchaseOrder()
   }, [])
+
+  const headers = [
+    { label: "No.", key: "purchaseOrderDetailName" },
+    { label: "DATE", key: "purchaseOrderDate" },
+    { label: "DRAWING#", key: "drawing" },
+    { label: "DESCRIPTION", key: "description" },
+    { label: "QTY", key: "quantity" },
+    { label: "MICRON#", key: "quotationNumber" },
+    { label: "NAME", key: "createdBy" },
+    { label: "Ext", key: "contactNumber" },
+    { label: "Commited Date", key: "commitDate" },
+    { label: "PO-DATE", key: "requestDate" },
+    { label: "Inv. DATE", key: "invoiceDate" },
+    { label: "Inv. Number", key: "invoiceNumber" },
+    { label: "Unit Price", key: ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? "unitPrice" : "" },
+    { label: "Total", key: ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? "total" : "" },
+    { label: "REMARKS", key: "comment" },
+
+    { label: "STATUS", key: "status" },
+    { label: "ชื่อผู้สั่ง/ชื่อเจ้าของงาน", key: "orderBy" },
+    { label: "Customer", key: "customerName" },
+  ];
 
   const getUsers = async () => {
     try {
@@ -132,7 +155,7 @@ export default function ReportPO() {
 
     return (
       <>
-        
+
         <div className="col-md-12">
           <div className="card card-primary">
             <div className="card-header">
@@ -214,7 +237,7 @@ export default function ReportPO() {
                   className="form-control"
                 />
               </ div>
-              
+
             </div>
           </div>
         </div>
@@ -274,32 +297,36 @@ export default function ReportPO() {
     const columns = [
       {
         header: 'แก้ไข/ลบ',
-        accessorKey: 'purchaseOrderNumber', //simple accessorKey pointing to flat data
+        accessorKey: 'purchaseOrderDetailNumber', //simple accessorKey pointing to flat data
         Cell: ({ cell, row }) => (
           <div>
             <Link style={{ marginRight: 10 }} className="btn btn-default" to={`/PurchaseOrder/UpdatePO/${cell.getValue()}`} target="_blank"  >
               <i className="fas fa-edit" />
             </Link>
+            <button style={{ marginRight: 10 }} className="btn btn-default" onClick={() => {
+              doDeletePoDetail(row.original.purchaseOrderDetailNumber, row.original.purchaseOrderDetailName)
+            }} >
+              <i className="fas fa-trash" />
+            </button>
           </div>
-        )
+        ),
+
+      },
+
+      {
+        header: 'DATE',
+        accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'No.',
         accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
       },
       {
-        header: 'DATE',
-        accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
-      },
-      {
         header: 'PO#',
         accessorKey: 'purchaseOrderName', //simple accessorKey pointing to flat data
       },
-      {
-        header: 'CUSTOMER',
-        accessorKey: 'customerName', //simple accessorKey pointing to flat data
-      },
+
       {
         header: 'DRAWING#',
         accessorKey: 'drawing', //simple accessorKey pointing to flat data
@@ -315,18 +342,16 @@ export default function ReportPO() {
           <NumericFormat thousandSeparator="," value={row.original.finishedQuantity} displayType="text" />/<NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
         </>
       },
-      {
-        header: 'STATE',
-        accessorKey: 'quantity', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
-          <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
-          <button className="btn btn-success btn-xs">เสร็จสิ้น</button>
 
-      },
       {
         header: 'MICRON#',
         accessorKey: 'quotationNumber', //simple accessorKey pointing to flat data
       },
+      {
+        header: 'ชื่อผู้สั่ง/ชื่อเจ้าของงาน',
+        accessorKey: 'orderBy', //simple accessorKey pointing to flat data
+      },
+
       {
         header: 'NAME',
         accessorKey: 'createdBy', //simple accessorKey pointing to flat data
@@ -338,17 +363,24 @@ export default function ReportPO() {
       {
         header: 'Commited Date',
         accessorKey: 'commitDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'PO-DATE',
         accessorKey: 'requestDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-yyyy")
+        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
+      },
+      {
+        header: 'STATUS',
+        accessorKey: 'quantity', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
+          <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
+          <button className="btn btn-success btn-xs">เสร็จสิ้น</button>
       },
       {
         header: 'Inv. DATE',
         accessorKey: 'invoiceDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' ? '' : moment(cell.getValue()).format("DD-MMM-yyyy")
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' ? '' : moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'Inv. Number',
@@ -368,23 +400,28 @@ export default function ReportPO() {
         header: 'REMARKS',
         accessorKey: 'comment', //simple accessorKey pointing to flat data
       },
-
+      {
+        header: 'Customer',
+        accessorKey: 'customerName', //simple accessorKey pointing to flat data
+      },
     ]
 
     const handleExportData = (rows) => {
-      const csvOptions = {
-        fieldSeparator: ',',
-        quoteStrings: '"',
-        decimalSeparator: '.',
-        showLabels: true,
-        useBom: true,
-        useKeysAsHeaders: true,
-        // headers: columns.map((c) => c.header),
-        filename: `Report_Purchase_Order_${moment().format('YYYY-MM-DD')}`,
-      };
+      let data = rows.map((row) => row.original)
+      for (let index = 0; index < data.length; index++) {
+        const item = data[index];
+        item.purchaseOrderDate = moment(item.purchaseOrderDate).format('DD-MMM-YY')
+        item.commitDate = moment(item.commitDate).format('DD-MMM-YY')
+        item.createdAt = moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')
+        item.invoiceDate = moment(item.invoiceDate).format('DD-MMM-YY')
+        item.requestDate = moment(item.requestDate).format('DD-MMM-YY')
+        item.updatedAt = moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')
+        item.total = item.quantity * item.unitPrice
+        item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"
+      }
+      console.log(data);
 
-      const csvExporter = new ExportToCsv(csvOptions);
-      csvExporter.generateCsv(rows.map((row) => row.original));
+      return data;
     };
 
     const handlePrint = (data) => {
@@ -403,6 +440,8 @@ export default function ReportPO() {
       return <>
         <div className="col-md-12">
           <MaterialReactTable
+            enableColumnResizing
+            columnResizeMode="onChange"
             columns={columns}
             data={purchaseData}
             enableColumnOrdering
@@ -413,16 +452,13 @@ export default function ReportPO() {
             positionToolbarAlertBanner="bottom"
             renderTopToolbarCustomActions={({ table }) => (
               <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
-                <button
-                  className="btn btn-primary"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handleExportData(table.getRowModel().rows)
-                  }}
+                <CSVLink className="btn btn-primary"
+                  data={handleExportData(table.getRowModel().rows)}
+                  filename={`Report_Purchase_Order_${moment().format('DD-MMM-YY')}.csv`}
+                  headers={headers}
                 >
-                  <i className="fas fa-file-csv" style={{ marginRight: 10 }} />
-                  ส่งออกข้อมูลเป็น CSV
-                </button>
+                  <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV
+                </CSVLink>
                 <button
                   disabled={
                     !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
@@ -451,11 +487,11 @@ export default function ReportPO() {
                 </button>
               </Box>
             )}
-            // renderDetailPanel={({ row }) => (
-            //   <Box>
-            //     {renderPurchaseOrderDetailsTable(row.original.tbPurchaseOrderDetails)}
-            //   </Box>
-            // )}
+          // renderDetailPanel={({ row }) => (
+          //   <Box>
+          //     {renderPurchaseOrderDetailsTable(row.original.tbPurchaseOrderDetails)}
+          //   </Box>
+          // )}
           />
         </div>
       </>
@@ -499,14 +535,14 @@ export default function ReportPO() {
           <td>{item.description}</td>
           <td>{item.comment}</td>
           <td>{moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')}</td>
-          <td>{findUser(item.createdBy) }</td>
+          <td>{findUser(item.createdBy)}</td>
           <td>{moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')}</td>
-          <td>{findUser(item.updatedBy) }</td>
+          <td>{findUser(item.updatedBy)}</td>
         </tr>
       ))
     }
     if (data.length > 0) {
-      
+
       console.log(data);
       return (
         <table className="table text-nowrap" style={{ backgroundColor: '#F0F0F0', width: '60%' }}>
@@ -523,10 +559,10 @@ export default function ReportPO() {
 
   }
 
-  const doDeletePo = (purchaseOrderNumber, purchaseOrderName_) => {
+  const doDeletePoDetail = (purchaseOrderDetailNumber, purchaseOrderDetailName_) => {
     Swal.fire({
       title: 'โปรดยืนยัน',
-      text: `ต้องการลบคำสั่งซื้อ ${purchaseOrderName_}`,
+      text: `ต้องการลบคำสั่งซื้อ ${purchaseOrderDetailName_}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -537,9 +573,9 @@ export default function ReportPO() {
       if (result.isConfirmed) {
         try {
           setisLoad(true)
-          const result = await httpClient.delete(apiName.purchaseOrder.po,
+          const result = await httpClient.delete(apiName.purchaseOrder.detail,
             {
-              data: { purchaseOrderNumber }
+              data: { purchaseOrderDetailNumber }
             }
           )
           setisLoad(false)
@@ -547,13 +583,13 @@ export default function ReportPO() {
             Swal.fire({
               icon: 'success',
               title: 'สำเร็จ',
-              text: `ลบคำสั่งซื้อ ${purchaseOrderName_} สำเร็จ`
+              text: `ลบคำสั่งซื้อ ${purchaseOrderDetailName_} สำเร็จ`
             }).then(() => doGetPurchaseOrder());
           } else {
             Swal.fire({
               icon: 'error',
               title: 'ล้มเหลว',
-              text: `ลบสั่งซื้อ ${purchaseOrderName_} ล้มเหลว`
+              text: `ลบสั่งซื้อ ${purchaseOrderDetailName_} ล้มเหลว`
             })
           }
         } catch (error) {
