@@ -414,7 +414,7 @@ export default function ReportPO() {
         item.purchaseOrderDate = moment(item.purchaseOrderDate).format('DD-MMM-YY')
         item.commitDate = moment(item.commitDate).format('DD-MMM-YY')
         item.createdAt = moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')
-        item.invoiceDate = moment(item.invoiceDate).format('DD-MMM-YY')
+        item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('DD-MMM-YY')
         item.requestDate = moment(item.requestDate).format('DD-MMM-YY')
         item.updatedAt = moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')
         item.total = item.quantity * item.unitPrice
