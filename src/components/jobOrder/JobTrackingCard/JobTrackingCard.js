@@ -48,18 +48,35 @@ export default function JobTrackingCard() {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12">
-              <div className="card card-dark">
+              <div className="card card-dark ">
                 <div className="card-header bg-main">
 
                 </div>
+
                 <div className="card-body">
                   <ReactToPrint
                     trigger={() => <button className="btn btn-primary">พิมพ์ใบตามงาน</button>}
                     content={() => componentRef.current}
                   />
-                  <ComponentToPrint
+                  <ShowPrint
                     listPo={listPo}
                     ref={componentRef} />
+                  <div className="card card-dark collapsed-card" style={{ visibility: 'hidden' }}>
+                    <div class="card-header">
+                      <h3 class="card-title">Expandable</h3>
+                      <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <ComponentToPrint
+                        listPo={listPo}
+                        ref={componentRef} />
+                    </div>
+
+                  </div>
+
                 </div>
                 <div className="card-footer">
 
@@ -126,8 +143,82 @@ class ComponentToPrint extends Component {
 
     return (
       <div>
-        <div className="page ">
-          <div className="subpage">
+        <div className="page landscape">
+          <div className="subpage" style={{ width: '130%', height: '130%' }}>
+            <div className="row" >
+              <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
+                <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
+                  ใบตามงาน
+                </h2>
+                <table className="table table-bordered">
+                  {renderHeader()}
+                  <tbody style={{ fontSize: 9 }}>
+                    {renderTableBody()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+class ShowPrint extends React.Component {
+  render() {
+    const renderHeader = () => (
+      <thead style={{ fontSize: 15 }}>
+        <tr>
+          {/* <th style={{ width: '5%' }}>No.</th> */}
+          <th style={{ width: '5%' }}>รหัส</th>
+          <th style={{ width: '9%' }}>วันที่สั่ง</th>
+          <th style={{ width: '10%' }}>ใบสั่งซื้อ</th>
+          <th style={{ width: '18%' }}>รายการ</th>
+          <th style={{ width: '5%' }}>QTY</th>
+          <th style={{ width: '10%' }}>ชื่อเจ้าของงาน</th>
+          <th style={{ width: '9%' }}>วันนัดส่งลูกค้า</th>
+          <th >ขั้นตอนการทำงาน</th>
+          <th >หมายเหตุ</th>
+        </tr>
+      </thead>
+    )
+
+    const renderTableBody = () => {
+      const data = this.props.listPo
+      console.log(data);
+      if (data) {
+        return data.map((item, index) => (
+          <tr style={{ fontSize: 12 }}>
+            <td>
+              {/* <QRCode
+                size={16}
+                value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
+              <br /> */}
+              {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
+            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
+            <td>
+              {/* <QRCode
+                size={16}
+                value={item.purchaseOrderName}
+              /><br /> */}
+              {item.purchaseOrderName}</td>
+
+            <td>{item['tbPurchaseOrderDetails.description']}</td>
+            <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
+            <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
+            <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
+            <td></td>
+            <td></td>
+          </tr>
+        ))
+      }
+    }
+
+    return (
+      <div>
+        <div className="">
+          <div className="" style={{ width: '95%'}}>
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
                 <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>

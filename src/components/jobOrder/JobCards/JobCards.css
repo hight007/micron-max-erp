@@ -3,7 +3,7 @@
   min-height: 29.7cm;
   padding: 0cm;
   margin: 0cm auto;
-  border: 0px #D3D3D3 solid;
+  border: 0px #d3d3d3 solid;
   border-radius: 0px;
   background: white;
   box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
@@ -13,12 +13,22 @@
   padding: 0cm;
   border: 0px red solid;
   height: 297mm;
-  outline: 0cm #FFEAEA solid;
+  outline: 0cm #ffeaea solid;
 }
 
 @page {
-  size: A4;
-  margin: 0;
+  size: portrait;
+}
+@page rotated {
+  page-orientation: rotate-left;
+}
+
+.landscape {
+  page: rotated;
+  transform-origin: top left;
+  transform: translateX(100vw) rotate(90deg);
+  width: 100vh;
+  height: 100vw;
 }
 
 @media print {

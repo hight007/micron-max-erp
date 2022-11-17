@@ -17,8 +17,19 @@
 }
 
 @page {
-  size: A4 landscape;
+  size: portrait;
+}
+@page rotated {
+  page-orientation: rotate-left;
+}
+
+.landscape {
+  page: rotated;
+  /* transform-origin: top left; */
   margin: 0;
+  transform: translateX(100%) rotate(90deg);
+  width: '100%';
+  height: '100%';
 }
 
 @media print {

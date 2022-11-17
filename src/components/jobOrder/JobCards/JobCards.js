@@ -119,14 +119,6 @@ class ComponentToPrint extends Component {
         <thead>
           <tr>
             <th style={{ textAlign: 'left' }} colspan="8">ORDER DATE : {moment().format('DD-MMM-YY')}</th>
-            {/* <th colspan="2" rowspan="2">
-              <QRCode
-                size={64}
-                // style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                value={item.purchaseOrderName}
-              // viewBox={`0 0 256 256`}
-              />
-            </th> */}
           </tr>
           <tr>
             <th style={{ textAlign: 'left' }} colspan="8">Customer : {item[0]["tbCustomer.customerName"]}</th>
@@ -139,7 +131,7 @@ class ComponentToPrint extends Component {
             <th>เบอร์ติดต่อ</th>
             <th>DESCRIPTION</th>
             <th>QTY</th>
-            <th>นัดส่งงาน</th>
+            <th style={{ width: '13%' }}>นัดส่งงาน</th>
           </tr>
         </thead>
       )
@@ -166,7 +158,7 @@ class ComponentToPrint extends Component {
       }
 
       return (
-        <div className="page ">
+        <div className="page">
           <div className="subpage">
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
@@ -178,7 +170,16 @@ class ComponentToPrint extends Component {
                   <tbody>
                     {renderTableBody(item)}
                   </tbody>
+                </table>
 
+                <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
+                  JOB ORDER CARD
+                </h2>
+                <table className="table table-bordered">
+                  {renderHeader()}
+                  <tbody>
+                    {renderTableBody(item)}
+                  </tbody>
                 </table>
 
               </div>
@@ -201,7 +202,6 @@ class ComponentToPrint extends Component {
 
     return (
       <div>
-
         {renderContent()}
       </div>
     );
