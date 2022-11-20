@@ -115,23 +115,32 @@ class ComponentToPrint extends Component {
     }
 
     const renderPageContent = (item, index) => {
+      const targetPoPerPage = 7
+
+      if (item.length < 8) {
+        for (let i = item.length; i < targetPoPerPage; i++) {
+          item.push({})
+        }
+      }
+      console.log(item);
+
       const renderHeader = () => (
         <thead>
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="8">ORDER DATE : {moment().format('DD-MMM-YY')}</th>
+            <td style={{ textAlign: 'left' }} colspan="3"><b>ORDER DATE : </b>{moment().format('DD-MMM-YY')}</td>
+            <td style={{ textAlign: 'left' }} colspan="3"><b>Customer : </b>{item[0]["tbCustomer.customerName"]}</td>
           </tr>
           <tr>
-            <th style={{ textAlign: 'left' }} colspan="8">Customer : {item[0]["tbCustomer.customerName"]}</th>
+            <td style={{ textAlign: 'left' }} colspan="3"><b>ชื่อเจ้าของงาน : </b>{item[0]["tbPurchaseOrderDetails.orderBy"]}</td>
+            <td style={{ textAlign: 'left' }} colspan="3"><b>เบอร์ติดต่อ : </b>{item[0]["tbPurchaseOrderDetails.contactNumber"]}</td>
           </tr>
           <tr>
-            <th style={{ width: 10 }}>ITEM</th>
-            <th>PO#</th>
-            <th>CODE</th>
-            <th>ชื่อเจ้าของงาน</th>
-            <th>เบอร์ติดต่อ</th>
+            <th style={{ width: '5%' }}>ITEM</th>
+            <th style={{ width: '13%' }}>PO#</th>
+            <th style={{ width: '16%' }}>CODE</th>
             <th>DESCRIPTION</th>
-            <th>QTY</th>
-            <th style={{ width: '13%' }}>นัดส่งงาน</th>
+            <th style={{ width: '8%' }}>QTY</th>
+            <th style={{ width: '11%' }}>นัดส่งงาน</th>
           </tr>
         </thead>
       )
@@ -143,14 +152,12 @@ class ComponentToPrint extends Component {
             return (
               <tr>
                 {/* <td>{item_.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td> */}
-                <td>{item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-                <td>{item_.purchaseOrderName}</td>
-                <td>{item_["tbPurchaseOrderDetails.drawing"]}</td>
-                <td>{item_["tbPurchaseOrderDetails.orderBy"]}</td>
-                <td>{item_["tbPurchaseOrderDetails.contactNumber"]}</td>
-                <td>{item_["tbPurchaseOrderDetails.description"]}</td>
-                <td>{item_["tbPurchaseOrderDetails.quantity"]}</td>
-                <td>{moment(item_.commitDate).format('DD-MMM-YY')}</td>
+                <td>{item_['tbPurchaseOrderDetails.purchaseOrderDetailName'] ? item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4) : ''}</td>
+                <td style={{ textAlign: 'left' }}>{item_.purchaseOrderName ?? ''}</td>
+                <td style={{ textAlign: 'left' }}> {item_["tbPurchaseOrderDetails.drawing"] ?? ''}</td>
+                <td style={{ textAlign: 'left' }}>{item_["tbPurchaseOrderDetails.description"] ?? ''}</td>
+                <td>{item_["tbPurchaseOrderDetails.quantity"] ?? ''}</td>
+                <td>{item_["tbPurchaseOrderDetails.commitDate"] ? moment(item_["tbPurchaseOrderDetails.commitDate"]).format('DD-MMM-YY') : <div style={{ visibility: 'hidden' }}>{moment().format('DD-MMM-YY')}</div>}</td>
               </tr>
             )
           })
@@ -161,20 +168,20 @@ class ComponentToPrint extends Component {
         <div className="page">
           <div className="subpage">
             <div className="row" >
-              <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
-                <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
+              <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 20 }}>
+                <h5 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
                   JOB ORDER CARD
-                </h2>
+                </h5>
                 <table className="table table-bordered">
                   {renderHeader()}
                   <tbody>
                     {renderTableBody(item)}
                   </tbody>
                 </table>
-
-                <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
+                <hr style={{ marginTop: 50, marginBottom: 50, border: '1px dashed' }}></hr>
+                <h5 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
                   JOB ORDER CARD
-                </h2>
+                </h5>
                 <table className="table table-bordered">
                   {renderHeader()}
                   <tbody>
@@ -191,7 +198,9 @@ class ComponentToPrint extends Component {
     }
 
     const renderContent = () => {
+
       const data = this.props.listPo
+
       if (data) {
 
         return _(data).groupBy('customerId').values().value().map((item, index) => (

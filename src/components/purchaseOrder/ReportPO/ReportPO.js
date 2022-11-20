@@ -420,7 +420,7 @@ export default function ReportPO() {
         item.total = item.quantity * item.unitPrice
         item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"
       }
-      console.log(data);
+      // console.log(data);
 
       return data;
     };
@@ -451,43 +451,48 @@ export default function ReportPO() {
             enableStickyFooter
             muiTableContainerProps={{ sx: { maxHeight: 500 } }}
             positionToolbarAlertBanner="bottom"
-            renderTopToolbarCustomActions={({ table }) => (
-              <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
-                <CSVLink className="btn btn-primary"
-                  data={handleExportData(table.getRowModel().rows)}
-                  filename={`Report_Purchase_Order_${moment().format('DD-MMM-YY')}.csv`}
-                  headers={headers}
-                >
-                  <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV
-                </CSVLink>
-                <button
-                  disabled={
-                    !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
-                  }
-                  className="btn btn-primary"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handlePrint(table.getSelectedRowModel().rows)
-                  }}
-                >
-                  <i className="fas fa-print" style={{ marginRight: 10 }} />
-                  พิมพ์ใบคำสั่งงาน
-                </button>
-                <button
-                  disabled={
-                    !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
-                  }
-                  className="btn btn-primary"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handleJobTracking(table.getSelectedRowModel().rows)
-                  }}
-                >
-                  <i className="fas fa-file-contract" style={{ marginRight: 10 }} />
-                  พิมพ์ใบตามงาน
-                </button>
-              </Box>
-            )}
+            renderTopToolbarCustomActions={({ table }) => {
+              let selectdItem = _.map(table.getSelectedRowModel().rows, 'original')
+              console.log(selectdItem.length);
+              return (
+                <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
+                  <CSVLink className="btn btn-primary"
+                    data={handleExportData(table.getRowModel().rows)}
+                    filename={`Report_Purchase_Order_${moment().format('DD-MMM-YY')}.csv`}
+                    headers={headers}
+                  >
+                    <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV
+                  </CSVLink>
+                  <button
+                    disabled={
+                      // (!table.getIsSomeRowsSelected() || selectdItem.length > 7) && (!table.getIsAllRowsSelected())
+                      selectdItem.length < 8 && selectdItem.length > 0 ? false : true
+                    }
+                    className="btn btn-primary"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handlePrint(table.getSelectedRowModel().rows)
+                    }}
+                  >
+                    <i className="fas fa-print" style={{ marginRight: 10 }} />
+                    พิมพ์ใบคำสั่งงาน
+                  </button>
+                  <button
+                    disabled={
+                      !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+                    }
+                    className="btn btn-primary"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleJobTracking(table.getSelectedRowModel().rows)
+                    }}
+                  >
+                    <i className="fas fa-file-contract" style={{ marginRight: 10 }} />
+                    พิมพ์ใบตามงาน
+                  </button>
+                </Box>
+              )
+            }}
           // renderDetailPanel={({ row }) => (
           //   <Box>
           //     {renderPurchaseOrderDetailsTable(row.original.tbPurchaseOrderDetails)}
