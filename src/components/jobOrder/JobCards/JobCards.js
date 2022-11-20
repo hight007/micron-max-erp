@@ -140,7 +140,7 @@ class ComponentToPrint extends Component {
             <th style={{ width: '16%' }}>CODE</th>
             <th>DESCRIPTION</th>
             <th style={{ width: '8%' }}>QTY</th>
-            <th style={{ width: '11%' }}>นัดส่งงาน</th>
+            <th style={{ width: '12%' }}>นัดส่งงาน</th>
           </tr>
         </thead>
       )
