@@ -317,7 +317,7 @@ export default function ReportPO() {
       {
         header: 'DATE',
         accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue()  == '' ? '' : moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'No.',
@@ -364,12 +364,12 @@ export default function ReportPO() {
       {
         header: 'Commited Date',
         accessorKey: 'commitDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? ''  : moment(cell.getValue()).format("DD-MMM-YY") 
       },
       {
         header: 'PO-DATE',
         accessorKey: 'requestDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => moment(cell.getValue()).format("DD-MMM-YY")
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? '' : moment(cell.getValue()).format("DD-MMM-YY") 
       },
       {
         header: 'STATUS',
@@ -411,11 +411,11 @@ export default function ReportPO() {
       let data = rows.map((row) => row.original)
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
-        item.purchaseOrderDate = moment(item.purchaseOrderDate).format('DD-MMM-YY')
+        item.purchaseOrderDate = item.purchaseOrderDate ? moment(item.purchaseOrderDate).format('DD-MMM-YY') : ''
         item.commitDate = moment(item.commitDate).format('DD-MMM-YY')
         item.createdAt = moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')
         item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('DD-MMM-YY')
-        item.requestDate = moment(item.requestDate).format('DD-MMM-YY')
+        item.requestDate = item.requestDate == "" ? "" : moment(item.requestDate).format('DD-MMM-YY')
         item.updatedAt = moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')
         item.total = item.quantity * item.unitPrice
         item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"

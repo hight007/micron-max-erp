@@ -16,7 +16,7 @@ export default function CreateNewPO() {
   const [customers, setcustomers] = useState([])
 
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
-  const [purchaseOrderDate, setpurchaseOrderDate] = useState(moment().startOf('D').toDate())
+  const [purchaseOrderDate, setpurchaseOrderDate] = useState(null)
   const [requestDate, setrequestDate] = useState(null)
   const [commitDate, setcommitDate] = useState(null)
   const [contactNumber, setcontactNumber] = useState('')
@@ -29,6 +29,7 @@ export default function CreateNewPO() {
   const [unitPrice, setunitPrice] = useState('')
   const [description, setdescription] = useState('')
   const [comment, setComment] = useState('')
+  const [piority, setPiority] = useState('')
   const [orderBy, setorderBy] = useState('')
   const [finishedQuantity, setfinishedQuantity] = useState(0)
 
@@ -52,7 +53,7 @@ export default function CreateNewPO() {
       <div className="form-group col-sm-4">
         <i className="fas fa-user-check" style={{ marginRight: 10 }} />
         <label >
-          ชื่อลูกค้า (Customer)</label>
+          ชื่อลูกค้า (Customer)*</label>
         <select
           value={customer}
           onChange={async (e) => {
@@ -71,7 +72,7 @@ export default function CreateNewPO() {
         <input
           value={orderBy}
           onChange={(e) => setorderBy(e.target.value)}
-          required
+          // required
           className="form-control"
         />
       </div>
@@ -81,23 +82,26 @@ export default function CreateNewPO() {
         <input
           value={contactNumber}
           onChange={(e) => setcontactNumber(e.target.value)}
-          required
+          // required
           className="form-control"
         />
       </div>
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
-        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
-          setpurchaseOrderDate(moment(date).startOf('D').toDate())
-          // generatePoName(null, moment(date).startOf('D').toDate())
-        }} />
+        <DatePicker
+          // required
+          className="form-control" selected={purchaseOrderDate} onChange={(date) => {
+            setpurchaseOrderDate(moment(date).startOf('D').toDate())
+            // generatePoName(null, moment(date).startOf('D').toDate())
+          }} />
 
       </div>
       <div className="form-group col-sm-4">
         <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} />
-        <label >ใบสั่งซื้อ (Purchase Order)</label>
+        <label >ใบสั่งซื้อ (Purchase Order)*</label>
         <input
+          required
           value={purchaseOrderName}
           onChange={(e) => setpurchaseOrderName(e.target.value)}
           className="form-control"
@@ -107,13 +111,15 @@ export default function CreateNewPO() {
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ส่งในใบสั่งซื้อ (Request date)</label>
-        <DatePicker required className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
+        <DatePicker 
+        // required 
+        className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
 
       </div>
 
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
-        <label >วันที่นัดส่งงาน (Commit date)</label>
+        <label >วันที่นัดส่งงาน (Commit date)*</label>
         <DatePicker required className="form-control" selected={commitDate} onChange={(date) => setcommitDate(moment(date).startOf('D').toDate())} />
 
       </div>
@@ -134,32 +140,39 @@ export default function CreateNewPO() {
       </div>
       <div className="form-group col-sm-4">
         <label >เลขที่ใบเสนอราคา (Quotation Number)</label>
-        <input value={quotationNumber} onChange={(e) => setquotationNumber(e.target.value)} required className="form-control" />
+        <input value={quotationNumber} onChange={(e) => setquotationNumber(e.target.value)} 
+        // required 
+        className="form-control" />
       </div>
       <div className="form-group col-sm-4">
-        <label >แบบแปลน (Drawing)</label>
+        <label >แบบแปลน (Drawing)*</label>
         <input value={drawing} onChange={(e) => setdrawing(e.target.value)} required className="form-control" />
       </div>
       <div className="form-group col-sm-4"></div>
       <div className="form-group col-sm-4">
-        <label >จำนวน (Quantity)</label>
+        <label >จำนวน (Quantity)*</label>
         <input value={quantity} onChange={(e) => setquantity(e.target.value)} required min={1} type="number" className="form-control" />
       </div>
       <div className="form-group col-sm-4">
-        <label >ราคาต่อหน่วย (Unit price)</label>
+        <label >ราคาต่อหน่วย (Unit price)*</label>
         <input value={unitPrice} onChange={(e) => setunitPrice(e.target.value)} required type="number" min={0} step={0.01} className="form-control" />
       </div>
       <div className="form-group col-sm-4">
         <label >จำนวนที่เสร็จสิ้น (Finished Quantity)</label>
         <input value={finishedQuantity} onChange={(e) => setfinishedQuantity(e.target.value)} required type="number" min={0} max={quantity} className="form-control" />
       </div>
-      <div className="form-group col-sm-6">
+      <div className="form-group col-sm-4">
         <label >รายละเอียด (Description)</label>
         <textarea rows={3} value={description} onChange={(e) => setdescription(e.target.value)} className="form-control" />
       </div>
-      <div className="form-group col-sm-6">
+      <div className="form-group col-sm-4">
         <label >คอมเม้น (Comment)</label>
         <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="form-control" />
+      </div>
+      <div className="form-group col-sm-4">
+        <i className="fas fa-sort-numeric-up-alt" style={{ marginRight: 10 }} />
+        <label >ความสำคัญ (Piority)*</label>
+        <input required min={0} max={3} defaultValue={0} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)}/>
       </div>
     </div>
   }
@@ -258,6 +271,7 @@ export default function CreateNewPO() {
                 createdBy: localStorage.getItem(key.user_id),
                 orderBy,
                 finishedQuantity,
+                piority,
               }
             )
 

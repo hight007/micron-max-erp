@@ -22,7 +22,7 @@ export default function UpdatePO() {
   const [purchaseOrderName, setpurchaseOrderName] = useState('')
   const [purchaseOrderNumber, setpurchaseOrderNumber] = useState('')
   const [purchaseOrderDetailName, setpurchaseOrderDetailName] = useState('')
-  const [purchaseOrderDate, setpurchaseOrderDate] = useState(moment().startOf('D').toDate())
+  const [purchaseOrderDate, setpurchaseOrderDate] = useState(null)
   const [requestDate, setrequestDate] = useState(null)
   const [commitDate, setcommitDate] = useState(null)
   const [contactNumber, setcontactNumber] = useState('')
@@ -35,6 +35,7 @@ export default function UpdatePO() {
   const [unitPrice, setunitPrice] = useState('')
   const [description, setdescription] = useState('')
   const [comment, setComment] = useState('')
+  const [piority, setPiority] = useState('')
   const [orderBy, setorderBy] = useState('')
   const [finishedQuantity, setfinishedQuantity] = useState('')
 
@@ -90,7 +91,7 @@ export default function UpdatePO() {
       <div className="form-group col-sm-4">
         <i className="fas fa-user-check" style={{ marginRight: 10 }} />
         <label >
-          ชื่อลูกค้า (Customer)</label>
+          ชื่อลูกค้า (Customer)*</label>
         <select
           value={customer}
           onChange={async (e) => {
@@ -109,7 +110,6 @@ export default function UpdatePO() {
         <input
           value={orderBy}
           onChange={(e) => setorderBy(e.target.value)}
-          required
           className="form-control"
         />
       </div>
@@ -119,14 +119,13 @@ export default function UpdatePO() {
         <input
           value={contactNumber}
           onChange={(e) => setcontactNumber(e.target.value)}
-          required
           className="form-control"
         />
       </div>
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
-        <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
+        <DatePicker className="form-control" selected={purchaseOrderDate} onChange={(date) => {
           setpurchaseOrderDate(moment(date).startOf('D').toDate())
           // generatePoName(null, moment(date).startOf('D').toDate())
         }} />
@@ -136,6 +135,7 @@ export default function UpdatePO() {
         <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} />
         <label >ใบสั่งซื้อ (Purchase Order)</label>
         <input
+          required
           value={purchaseOrderName}
           onChange={(e) => setpurchaseOrderName(e.target.value)}
           className="form-control"
@@ -145,13 +145,13 @@ export default function UpdatePO() {
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ส่งในใบสั่งซื้อ (Request date)</label>
-        <DatePicker required className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
+        <DatePicker  className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
 
       </div>
 
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
-        <label >วันที่นัดส่งงาน (Commit date)</label>
+        <label >วันที่นัดส่งงาน (Commit date)*</label>
         <DatePicker required className="form-control" selected={commitDate} onChange={(date) => setcommitDate(moment(date).startOf('D').toDate())} />
 
       </div>
@@ -172,10 +172,10 @@ export default function UpdatePO() {
       </div>
       <div className="form-group col-sm-4">
         <label >เลขที่ใบเสนอราคา (Quotation Number)</label>
-        <input value={quotationNumber} onChange={(e) => setquotationNumber(e.target.value)} required className="form-control" />
+        <input value={quotationNumber} onChange={(e) => setquotationNumber(e.target.value)} className="form-control" />
       </div>
       <div className="form-group col-sm-4">
-        <label >แบบแปลน (Drawing)</label>
+        <label >แบบแปลน (Drawing)*</label>
         <input value={drawing} onChange={(e) => setdrawing(e.target.value)} required className="form-control" />
       </div>
       <div className="form-group col-sm-4">
@@ -194,13 +194,18 @@ export default function UpdatePO() {
         <label >จำนวนที่เสร็จสิ้น (Finished Quantity)</label>
         <input value={finishedQuantity} onChange={(e) => setfinishedQuantity(e.target.value)} required type="number" min={0} max={quantity} className="form-control" />
       </div>
-      <div className="form-group col-sm-6">
+      <div className="form-group col-sm-4">
         <label >รายละเอียด (Description)</label>
         <textarea rows={3} value={description} onChange={(e) => setdescription(e.target.value)} className="form-control" />
       </div>
-      <div className="form-group col-sm-6">
+      <div className="form-group col-sm-4">
         <label >คอมเม้น (Comment)</label>
         <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="form-control" />
+      </div>
+      <div className="form-group col-sm-4">
+        <i className="fas fa-sort-numeric-up-alt" style={{ marginRight: 10 }} />
+        <label >ความสำคัญ (Piority)*</label>
+        <input required value={piority} min={0} max={3} defaultValue={0} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)} />
       </div>
     </div>
   }
@@ -225,12 +230,13 @@ export default function UpdatePO() {
       setfinishedQuantity(poDetails_.finishedQuantity)
       setpurchaseOrderNumber(poDetails_.purchaseOrderNumber)
       setpurchaseOrderDetailName(poDetails_.purchaseOrderDetailName)
+      setPiority(poDetails_.piority)
     }
   }
 
   const doReset = () => {
     setpurchaseOrderName('')
-    setpurchaseOrderDate(new Date())
+    setpurchaseOrderDate(null)
     setrequestDate(null)
     setcommitDate(null)
     setcontactNumber('')
@@ -263,7 +269,7 @@ export default function UpdatePO() {
         const { poDetailNumber } = params
         if (purchaseOrderName != poDetails.tbPurchaseOrder.purchaseOrderName || customer != poDetails.tbPurchaseOrder.customerId) {
           const po_ = await httpClient.get(apiName.purchaseOrder.poName + purchaseOrderName)
-          
+
           if (!po_.data.result) {
             //if not create new po
             const result = await httpClient.post(apiName.purchaseOrder.po,
@@ -287,7 +293,7 @@ export default function UpdatePO() {
               customerId: customer,
               updatedBy: localStorage.getItem(key.user_id)
             })
-            
+
           }
         }
 
@@ -303,6 +309,7 @@ export default function UpdatePO() {
             quantity,
             unitPrice,
             finishedQuantity,
+            purchaseOrderDate,
             updatedBy: localStorage.getItem(key.user_id),
             requestDate,
             commitDate,
@@ -311,6 +318,7 @@ export default function UpdatePO() {
             orderBy,
             invoiceDate,
             purchaseOrderNumber: poNumber,
+            piority,
           }
         )
         setisLoad(false)

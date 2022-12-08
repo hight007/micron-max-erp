@@ -135,7 +135,7 @@ class ComponentToPrint extends Component {
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
             <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
             <td></td>
-            <td></td>
+            <td>{item['tbPurchaseOrderDetails.comment'].replaceAll('\n', '<br>')}</td>
           </tr>
         ))
       }
@@ -209,16 +209,24 @@ class ShowPrint extends React.Component {
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
             <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
             <td></td>
-            <td></td>
+            <td>{generateComment(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
         ))
       }
     }
 
+    const generateComment = (comment) => {
+      const list = comment.split("\n")
+
+      return list.map((data) => (
+        <div>{data}</div>
+      ))
+    }
+
     return (
       <div>
         <div className="">
-          <div className="" style={{ width: '95%'}}>
+          <div className="" style={{ width: '95%' }}>
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
                 <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
