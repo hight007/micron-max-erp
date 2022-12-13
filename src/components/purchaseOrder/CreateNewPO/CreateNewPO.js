@@ -172,7 +172,7 @@ export default function CreateNewPO() {
       <div className="form-group col-sm-4">
         <i className="fas fa-sort-numeric-up-alt" style={{ marginRight: 10 }} />
         <label >ความสำคัญ (Piority)*</label>
-        <input required min={0} max={3} defaultValue={0} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)}/>
+        <input required min={1} max={3} defaultValue={3} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)}/>
       </div>
     </div>
   }
@@ -223,13 +223,14 @@ export default function CreateNewPO() {
         if (confirm.isConfirmed) {
           setisLoad(true)
           //check have PO name ?
-          const po_ = await httpClient.get(apiName.purchaseOrder.poName + purchaseOrderName)
+          const realPo =  purchaseOrderName == '-' ? 'tempPO_' + customer : purchaseOrderName
+          const po_ = await httpClient.get(apiName.purchaseOrder.poName + realPo)
           let poNumber;
           if (!po_.data.result) {
             //if not create new po
             const result = await httpClient.post(apiName.purchaseOrder.po,
               {
-                purchaseOrderName,
+                purchaseOrderName: realPo,
                 createdBy: localStorage.getItem(key.user_id),
                 customerId: customer,
               }
@@ -241,7 +242,7 @@ export default function CreateNewPO() {
               Swal.fire({
                 icon: 'error',
                 title: 'ล้มเหลว',
-                text: `เพิ่มคำสั่งซื้อ ${purchaseOrderName} ล้มเหลว`
+                text: `เพิ่มคำสั่งซื้อ ${realPo} ล้มเหลว`
               })
               setisLoad(false)
               return

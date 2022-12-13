@@ -205,7 +205,7 @@ export default function UpdatePO() {
       <div className="form-group col-sm-4">
         <i className="fas fa-sort-numeric-up-alt" style={{ marginRight: 10 }} />
         <label >ความสำคัญ (Piority)*</label>
-        <input required value={piority} min={0} max={3} defaultValue={0} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)} />
+        <input required value={piority} min={1} max={3} defaultValue={3} type="number" className="form-control" onChange={(e) => setPiority(e.target.value)} />
       </div>
     </div>
   }

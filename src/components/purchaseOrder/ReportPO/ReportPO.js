@@ -48,10 +48,10 @@ export default function ReportPO() {
     { label: "DRAWING#", key: "drawing" },
     { label: "DESCRIPTION", key: "description" },
     { label: "QTY", key: "quantity" },
+    { label: "Commited Date", key: "commitDate" },
     { label: "MICRON#", key: "quotationNumber" },
     { label: "NAME", key: "createdBy" },
     { label: "Ext", key: "contactNumber" },
-    { label: "Commited Date", key: "commitDate" },
     { label: "PO-DATE", key: "requestDate" },
     { label: "Inv. DATE", key: "invoiceDate" },
     { label: "Inv. Number", key: "invoiceNumber" },
@@ -62,6 +62,7 @@ export default function ReportPO() {
     { label: "STATUS", key: "status" },
     { label: "ชื่อผู้สั่ง/ชื่อเจ้าของงาน", key: "orderBy" },
     { label: "Customer", key: "customerName" },
+    { label: "Piority", key: "piority" }
   ];
 
   const getUsers = async () => {
@@ -294,6 +295,17 @@ export default function ReportPO() {
     )
   }
 
+  const getColor = (piority) => {
+    switch (piority) {
+      case 1: return '#ff7c80'
+
+      case 2: return '#fde499'
+
+      default: return '#b5f0b3'
+
+    }
+  }
+
   const renderSearchResult = () => {
     const columns = [
       {
@@ -317,7 +329,7 @@ export default function ReportPO() {
       {
         header: 'DATE',
         accessorKey: 'purchaseOrderDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue()  == '' ? '' : moment(cell.getValue()).format("DD-MMM-YY")
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' ? '' : moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'No.',
@@ -343,7 +355,11 @@ export default function ReportPO() {
           <NumericFormat thousandSeparator="," value={row.original.finishedQuantity} displayType="text" />/<NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" />
         </>
       },
-
+      {
+        header: 'Commited Date',
+        accessorKey: 'commitDate', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => <div style={{ backgroundColor: getColor(row.original.piority) , textAlign: 'center' , borderRadius : 10}}>{cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? '' : moment(cell.getValue()).format("DD-MMM-YY")}</div>
+      },
       {
         header: 'MICRON#',
         accessorKey: 'quotationNumber', //simple accessorKey pointing to flat data
@@ -361,15 +377,11 @@ export default function ReportPO() {
         header: 'Ext',
         accessorKey: 'contactNumber', //simple accessorKey pointing to flat data
       },
-      {
-        header: 'Commited Date',
-        accessorKey: 'commitDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? ''  : moment(cell.getValue()).format("DD-MMM-YY") 
-      },
+      
       {
         header: 'PO-DATE',
         accessorKey: 'requestDate', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? '' : moment(cell.getValue()).format("DD-MMM-YY") 
+        Cell: ({ cell, row }) => cell.getValue() == null || cell.getValue() == '' || cell.getValue() == 'Invalid date' ? '' : moment(cell.getValue()).format("DD-MMM-YY")
       },
       {
         header: 'STATUS',
@@ -405,6 +417,10 @@ export default function ReportPO() {
         header: 'Customer',
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
       },
+      {
+        header: 'Piority',
+        accessorKey: 'piority'
+      }
     ]
 
     const handleExportData = (rows) => {
@@ -449,7 +465,14 @@ export default function ReportPO() {
             enableRowSelection
             enableStickyHeader
             enableStickyFooter
-            muiTableContainerProps={{ sx: { maxHeight: 500 } }}
+            enablePagination={true}
+            muiTableContainerProps={{
+              // sx: { maxHeight: 600 }, 
+            }}
+            muiTablePaginationProps={{
+              // rowsPerPage : 100,
+              rowsPerPageOptions: [10 , 50, 100 , 150 , 200 ,250 ,300],
+            }}
             positionToolbarAlertBanner="bottom"
             renderTopToolbarCustomActions={({ table }) => {
               let selectdItem = _.map(table.getSelectedRowModel().rows, 'original')

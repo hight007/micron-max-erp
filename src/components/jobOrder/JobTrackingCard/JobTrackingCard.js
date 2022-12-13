@@ -93,6 +93,22 @@ export default function JobTrackingCard() {
 
 class ComponentToPrint extends Component {
   render() {
+    const getColor = (piority) => {
+      switch (piority) {
+        case 1: return '#ff7c80'
+
+        case 2: return '#fde499'
+
+        default: return '#b5f0b3'
+
+      }
+    }
+    const renderRemark = (text) => {
+      const listText = text.split('\n')
+      return listText.map(item => (
+        <div>{item}</div>
+      ))
+    }
     const renderHeader = () => (
       <thead style={{ fontSize: 15 }}>
         <tr>
@@ -133,9 +149,9 @@ class ComponentToPrint extends Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
+            <td ><div style={{ backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
             <td></td>
-            <td>{item['tbPurchaseOrderDetails.comment'].replaceAll('\n', '<br>')}</td>
+            <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
         ))
       }
@@ -167,6 +183,16 @@ class ComponentToPrint extends Component {
 
 class ShowPrint extends React.Component {
   render() {
+    const getColor = (piority) => {
+      switch (piority) {
+        case 1: return '#ff7c80'
+
+        case 2: return '#fde499'
+
+        default: return '#b5f0b3'
+
+      }
+    }
     const renderHeader = () => (
       <thead style={{ fontSize: 15 }}>
         <tr>
@@ -207,7 +233,7 @@ class ShowPrint extends React.Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td>{moment(item.commitDate).format('DD-MMM-YY')}</td>
+            <td><div style={{ backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
             <td></td>
             <td>{generateComment(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
@@ -245,4 +271,6 @@ class ShowPrint extends React.Component {
       </div>
     )
   }
+
+
 }
