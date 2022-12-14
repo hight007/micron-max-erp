@@ -29,7 +29,7 @@ export default function CreateNewPO() {
   const [unitPrice, setunitPrice] = useState('')
   const [description, setdescription] = useState('')
   const [comment, setComment] = useState('')
-  const [piority, setPiority] = useState('')
+  const [piority, setPiority] = useState(3)
   const [orderBy, setorderBy] = useState('')
   const [finishedQuantity, setfinishedQuantity] = useState(0)
 
