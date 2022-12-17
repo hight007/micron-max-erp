@@ -149,7 +149,7 @@ class ComponentToPrint extends Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td ><div style={{ borderRadius: 10, paddingLeft : 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
+            <td ><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item['tbPurchaseOrderDetails.commitDate']).format('DD-MMM-YY')}</div></td>
             <td></td>
             <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
@@ -233,7 +233,7 @@ class ShowPrint extends React.Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
+            <td><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item['tbPurchaseOrderDetails.commitDate']).format('DD-MMM-YY')}</div></td>
             <td></td>
             <td>{generateComment(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
