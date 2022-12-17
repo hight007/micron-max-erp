@@ -138,7 +138,7 @@ class ComponentToPrint extends Component {
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
               <br /> */}
               {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
+            <td>{moment(item.purchaseOrderDate).add(-1, 'd').format('DD-MMM-YY')}</td>
             <td>
               {/* <QRCode
                 size={16}
@@ -149,7 +149,7 @@ class ComponentToPrint extends Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td ><div style={{ backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
+            <td ><div style={{ borderRadius: 10, paddingLeft : 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
             <td></td>
             <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
@@ -166,7 +166,7 @@ class ComponentToPrint extends Component {
                 <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
                   ใบตามงาน
                 </h2>
-                <table className="table table-bordered">
+                <table className="table table-bordered" style={{ textAlign: 'left' }}>
                   {renderHeader()}
                   <tbody style={{ fontSize: 9 }}>
                     {renderTableBody()}
@@ -222,7 +222,7 @@ class ShowPrint extends React.Component {
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
               <br /> */}
               {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-            <td>{moment(item.purchaseOrderDate).format('DD-MMM-YY')}</td>
+            <td >{moment(item.purchaseOrderDate).add(-1,'d').format('DD-MMM-YY')}</td>
             <td>
               {/* <QRCode
                 size={16}
@@ -233,7 +233,7 @@ class ShowPrint extends React.Component {
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td><div style={{ backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
+            <td><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item.commitDate).format('DD-MMM-YY')}</div></td>
             <td></td>
             <td>{generateComment(item['tbPurchaseOrderDetails.comment'])}</td>
           </tr>
@@ -258,7 +258,7 @@ class ShowPrint extends React.Component {
                 <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
                   ใบตามงาน
                 </h2>
-                <table className="table table-bordered">
+                <table className="table table-bordered" style={{ textAlign: 'left' }}>
                   {renderHeader()}
                   <tbody style={{ fontSize: 9 }}>
                     {renderTableBody()}
