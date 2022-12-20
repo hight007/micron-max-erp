@@ -135,7 +135,12 @@ export default function ReportPO() {
 
       console.log(response.data);
       if (response.data.api_result === OK) {
-        setpurchaseData(response.data.result)
+        await  setpurchaseData(response.data.result)
+        // const dropDownValue = document.getElementsByClassName("css-yf8vq0-MuiSelect-nativeInput")[0].value;
+        // if (dropDownValue == 10){
+
+        // }
+        // document.querySelector("form[name='foo'] > input.bar").value = "blah"
       }
 
     } catch (error) {
@@ -466,11 +471,12 @@ export default function ReportPO() {
             enableStickyHeader
             enableStickyFooter
             enablePagination={true}
+            initialState={{ pagination: { pageSize: 100, } }}
+
             muiTableContainerProps={{
               // sx: { maxHeight: 600 }, 
             }}
             muiTablePaginationProps={{
-              // rowsPerPage : 100,
               rowsPerPageOptions: [10 , 50, 100 , 150 , 200 ,250 ,300],
             }}
             positionToolbarAlertBanner="bottom"

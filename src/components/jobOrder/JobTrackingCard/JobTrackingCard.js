@@ -4,7 +4,7 @@ import { apiName, OK } from '../../../constants';
 import { httpClient } from '../../../utils/HttpClient';
 import ContentHeader from '../../main/ContentHeader/ContentHeader'
 import moment from 'moment/moment';
-import QRCode from "react-qr-code";
+// import QRCode from "react-qr-code";
 import LoadingScreen from '../../main/LoadingScreen';
 import ReactToPrint from 'react-to-print';
 import './JobTrackingCard.css'
