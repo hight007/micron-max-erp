@@ -92,6 +92,7 @@ export default function JobTrackingCard() {
 }
 
 class ComponentToPrint extends Component {
+  
   render() {
     const getColor = (piority) => {
       switch (piority) {
@@ -111,13 +112,21 @@ class ComponentToPrint extends Component {
     }
     const renderHeader = () => (
       <thead style={{ fontSize: 15 }}>
+        <tr style={{ }}>
+          <th colspan="10" className="col-md-12 text-center" >
+            <h2 style={{ border: "2px solid", borderColor: "gray", backgroundColor: 'gray', color: "white" }}>
+              ใบตามงาน
+            </h2>
+          </th>
+        </tr>
         <tr>
           {/* <th style={{ width: '5%' }}>No.</th> */}
-          <th style={{ width: '5%' }}>รหัส</th>
-          <th style={{ width: '9%' }}>วันที่สั่ง</th>
-          <th style={{ width: '10%' }}>ใบสั่งซื้อ</th>
+          <th style={{ width: '4%' }}>รหัส</th>
+          <th style={{ width: '8%' }}>วันที่สั่ง</th>
+          <th style={{ width: '9%' }}>ใบสั่งซื้อ</th>
+          <th style={{ width: '12%' }}>เลข DRG</th>
           <th style={{ width: '18%' }}>รายการ</th>
-          <th style={{ width: '5%' }}>QTY</th>
+          <th style={{ width: '3%' }}>QTY</th>
           <th style={{ width: '10%' }}>ชื่อเจ้าของงาน</th>
           <th style={{ width: '9%' }}>วันนัดส่งลูกค้า</th>
           <th >ขั้นตอนการทำงาน</th>
@@ -126,34 +135,49 @@ class ComponentToPrint extends Component {
       </thead>
     )
 
+
     const renderTableBody = () => {
       const data = this.props.listPo
       console.log(data);
-      if (data) {
-        return data.map((item, index) => (
-          <tr style={{ fontSize: 12 }}>
-            <td>
-              {/* <QRCode
-                size={16}
-                value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
-              <br /> */}
-              {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-            <td>{moment(item.purchaseOrderDate).add(-1, 'd').format('DD-MMM-YY')}</td>
-            <td>
-              {/* <QRCode
-                size={16}
-                value={item.purchaseOrderName}
-              /><br /> */}
-              {item.purchaseOrderName}</td>
 
-            <td>{item['tbPurchaseOrderDetails.description']}</td>
-            <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
-            <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
-            <td ><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item['tbPurchaseOrderDetails.commitDate']).format('DD-MMM-YY')}</div></td>
-            <td></td>
-            <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
-          </tr>
-        ))
+      if (data) {
+        return data.map((item, index) => {
+          if ((index + 1) % 16 == 0) {
+            return (
+              <>
+                <tr style={{ fontSize: 12 }}>
+                  <td>
+                    {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
+                  <td>{moment(item.purchaseOrderDate).add(-1, 'd').format('DD-MMM-YY')}</td>
+                  <td>{item.purchaseOrderName}</td>
+                  <td>{item['tbPurchaseOrderDetails.drawing']}</td>
+                  <td>{item['tbPurchaseOrderDetails.description']}</td>
+                  <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
+                  <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
+                  <td ><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item['tbPurchaseOrderDetails.commitDate']).format('DD-MMM-YY')}</div></td>
+                  <td></td>
+                  <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
+                </tr>
+                <div className="page-break" />
+              </>
+            )
+          } else {
+            return <tr style={{ fontSize: 12 }}>
+              <td>
+                {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
+              <td>{moment(item['tbPurchaseOrderDetails.purchaseOrderDate']).add(-1, 'd').format('DD-MMM-YY')}</td>
+              <td>{item.purchaseOrderName}</td>
+              <td>{item['tbPurchaseOrderDetails.drawing']}</td>
+              <td>{item['tbPurchaseOrderDetails.description']}</td>
+              <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
+              <td>{item['tbPurchaseOrderDetails.orderBy']}</td>
+              <td ><div style={{ borderRadius: 10, paddingLeft: 10, backgroundColor: getColor(item['tbPurchaseOrderDetails.piority']) }}>{moment(item['tbPurchaseOrderDetails.commitDate']).format('DD-MMM-YY')}</div></td>
+              <td></td>
+              <td>{renderRemark(item['tbPurchaseOrderDetails.comment'])}</td>
+            </tr>
+          }
+
+        })
       }
     }
 
@@ -163,9 +187,7 @@ class ComponentToPrint extends Component {
           <div className="subpage" style={{ width: '130%', height: '130%' }}>
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 30 }}>
-                <h2 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
-                  ใบตามงาน
-                </h2>
+                
                 <table className="table table-bordered" style={{ textAlign: 'left' }}>
                   {renderHeader()}
                   <tbody style={{ fontSize: 9 }}>
@@ -200,6 +222,7 @@ class ShowPrint extends React.Component {
           <th style={{ width: '5%' }}>รหัส</th>
           <th style={{ width: '9%' }}>วันที่สั่ง</th>
           <th style={{ width: '10%' }}>ใบสั่งซื้อ</th>
+          <th style={{ width: '10%' }}>เลข DRG</th>
           <th style={{ width: '18%' }}>รายการ</th>
           <th style={{ width: '5%' }}>QTY</th>
           <th style={{ width: '10%' }}>ชื่อเจ้าของงาน</th>
@@ -222,14 +245,9 @@ class ShowPrint extends React.Component {
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
               <br /> */}
               {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-            <td >{moment(item.purchaseOrderDate).add(-1,'d').format('DD-MMM-YY')}</td>
-            <td>
-              {/* <QRCode
-                size={16}
-                value={item.purchaseOrderName}
-              /><br /> */}
-              {item.purchaseOrderName}</td>
-
+            <td >{moment(item['tbPurchaseOrderDetails.purchaseOrderDate']).add(-1, 'd').format('DD-MMM-YY')}</td>
+            <td>{item.purchaseOrderName}</td>
+            <td>{item['tbPurchaseOrderDetails.drawing']}</td>
             <td>{item['tbPurchaseOrderDetails.description']}</td>
             <td>{item['tbPurchaseOrderDetails.finishedQuantity']}/{item['tbPurchaseOrderDetails.quantity']}</td>
             <td>{item['tbPurchaseOrderDetails.orderBy']}</td>

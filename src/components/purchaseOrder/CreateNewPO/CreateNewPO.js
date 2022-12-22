@@ -317,8 +317,9 @@ export default function CreateNewPO() {
                     {renderInputPO()}
                   </div>
                   <div className="card-footer">
-                    <button type="submit" className="btn btn-primary">ตกลง</button>
-                    <button type="reset" onClick={() => doReset()} className="btn btn-default float-right">ยกเลิก</button>
+                    
+                    <button type="reset" onClick={() => doReset()} className="btn btn-default ">ยกเลิก</button>
+                    <button type="submit" className="btn btn-primary float-right">ตกลง</button>
                   </div>
                 </form>
               </div>

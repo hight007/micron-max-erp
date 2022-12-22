@@ -44,3 +44,11 @@
     page-break-after: always;
   }
 }
+
+@media print {
+  .page-break {
+    /* margin-top: 1rem; */
+    display: block;
+    page-break-before: always;
+  }
+}
