@@ -31,6 +31,7 @@ export default function ReportPO() {
   const [quotationNumber, setquotationNumber] = useState('')
   const [createdBy, setcreatedBy] = useState('')
   const [description, setdescription] = useState('')
+  const [status, setstatus] = useState('Inprocess')
 
   const [purchaseData, setpurchaseData] = useState([])
   const [customers, setcustomers] = useState([])
@@ -130,10 +131,11 @@ export default function ReportPO() {
       if (description != '' && description != null) {
         condition.description = description
       }
+      if (status != '' && status != null){
+        condition.status = status
+      }
 
       const response = await httpClient.post(apiName.purchaseOrder.get, { condition })
-
-      console.log(response.data);
       if (response.data.api_result === OK) {
         await  setpurchaseData(response.data.result)
         // const dropDownValue = document.getElementsByClassName("css-yf8vq0-MuiSelect-nativeInput")[0].value;
@@ -154,8 +156,8 @@ export default function ReportPO() {
   const renderSearchCondition = () => {
     const renderCustomerOption = () => {
       if (customers.length > 0) {
-        return customers.map((item) => (
-          <option value={item.customerId}>{item.customerName}</option>
+        return customers.map((item , index) => (
+          <option key={index} value={item.customerId}>{item.customerName}</option>
         ))
       }
     }
@@ -235,7 +237,22 @@ export default function ReportPO() {
                   className="form-control" />
               </div>
 
-              <div className="form-group col-md-12 resizeable">
+              <div className="form-group col-md-4 resizeable">
+                <i className="fas fa-file" style={{ marginRight: 10 }} />
+                <label >
+                  สถานะ (Status)</label>
+                <select
+                  value={status}
+                  onChange={(e) => setstatus(e.target.value)}
+                  required
+                  className="form-control" >
+                  <option value="">ทั้งหมด</option>
+                  <option value="Inprocess">ดำเนินการ</option>
+                  <option value="Done">เสร็จสิ้น</option>
+                </select>
+              </div>
+
+              <div className="form-group col-md-8 resizeable">
                 <i className="fas fa-file" style={{ marginRight: 10 }} />
                 <label >รายละเอียด (Description)</label>
                 <input
@@ -338,7 +355,8 @@ export default function ReportPO() {
       },
       {
         header: 'No.',
-        accessorKey: 'purchaseOrderDetailName', //simple accessorKey pointing to flat data
+        accessorKey: 'runningnumber', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => row.original.purchaseOrderDetailName
       },
       {
         header: 'PO#',
@@ -390,8 +408,8 @@ export default function ReportPO() {
       },
       {
         header: 'STATUS',
-        accessorKey: 'quantity', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => cell.getValue() > row.original.finishedQuantity ?
+        accessorKey: 'statusEn', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => cell.getValue() == 'Inprocess' ?
           <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
           <button className="btn btn-success btn-xs">เสร็จสิ้น</button>
       },
@@ -411,8 +429,8 @@ export default function ReportPO() {
       },
       {
         header: 'Total',
-        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue() * row.original.quantity} displayType="text" /> : <></>
+        accessorKey: 'total', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" /> : <></>
       },
       {
         header: 'REMARKS',
@@ -438,7 +456,7 @@ export default function ReportPO() {
         item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('DD-MMM-YY')
         item.requestDate = item.requestDate == "" ? "" : moment(item.requestDate).format('DD-MMM-YY')
         item.updatedAt = moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')
-        item.total = item.quantity * item.unitPrice
+        // item.total = item.quantity * item.unitPrice
         item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"
       }
       // console.log(data);
@@ -482,7 +500,6 @@ export default function ReportPO() {
             positionToolbarAlertBanner="bottom"
             renderTopToolbarCustomActions={({ table }) => {
               let selectdItem = _.map(table.getSelectedRowModel().rows, 'original')
-              console.log(selectdItem.length);
               return (
                 <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
                   <CSVLink className="btn btn-primary"
@@ -522,77 +539,13 @@ export default function ReportPO() {
                 </Box>
               )
             }}
-          // renderDetailPanel={({ row }) => (
-          //   <Box>
-          //     {renderPurchaseOrderDetailsTable(row.original.tbPurchaseOrderDetails)}
-          //   </Box>
-          // )}
           />
         </div>
       </>
     }
   }
 
-  const renderPurchaseOrderDetailsTable = (data) => {
 
-    data = _.filter(data, { isDeleted: false })
-    const header = () => {
-      return (
-        <tr>
-          <th>purchaseOrderDetailName</th>
-          <th>quantity</th>
-          <th>finishedQuantity</th>
-          <th>status</th>
-          <th>drawing</th>
-          <th>quotationNumber</th>
-          <th>description</th>
-          <th>comment</th>
-          <th>createdAt</th>
-          <th>createdBy</th>
-          <th>updatedAt</th>
-          <th>updatedBy</th>
-
-        </tr>
-      )
-    }
-    const body = (data) => {
-      return data.map((item, index) => (
-        <tr>
-          <td>{item.purchaseOrderDetailName}</td>
-          <td>{<NumericFormat thousandSeparator="," value={item.quantity} displayType="text" />}</td>
-          <td>{<NumericFormat thousandSeparator="," value={item.finishedQuantity} displayType="text" />}</td>
-          <td>{item.quantity > item.finishedQuantity ?
-            <button className="btn btn-warning btn-xs">ดำเนินการ</button> :
-            <button className="btn btn-success btn-xs">เสร็จสิ้น</button>}
-          </td>
-          <td>{item.drawing}</td>
-          <td>{item.quotationNumber}</td>
-          <td>{item.description}</td>
-          <td>{item.comment}</td>
-          <td>{moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')}</td>
-          <td>{findUser(item.createdBy)}</td>
-          <td>{moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')}</td>
-          <td>{findUser(item.updatedBy)}</td>
-        </tr>
-      ))
-    }
-    if (data.length > 0) {
-
-      console.log(data);
-      return (
-        <table className="table text-nowrap" style={{ backgroundColor: '#F0F0F0', width: '60%' }}>
-          <thead>
-            {header()}
-          </thead>
-          <tbody>
-            {body(data)}
-          </tbody>
-        </table>
-      )
-    }
-
-
-  }
 
   const doDeletePoDetail = (purchaseOrderDetailNumber, purchaseOrderDetailName_) => {
     Swal.fire({
