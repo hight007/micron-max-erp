@@ -450,12 +450,12 @@ export default function ReportPO() {
       let data = rows.map((row) => row.original)
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
-        item.purchaseOrderDate = item.purchaseOrderDate ? moment(item.purchaseOrderDate).format('DD-MMM-YY') : ''
-        item.commitDate = moment(item.commitDate).format('DD-MMM-YY')
-        item.createdAt = moment(item.createdAt).format('DD-MMM-YY HH:mm:ss')
-        item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('DD-MMM-YY')
-        item.requestDate = item.requestDate == "" ? "" : moment(item.requestDate).format('DD-MMM-YY')
-        item.updatedAt = moment(item.updatedAt).format('DD-MMM-YY HH:mm:ss')
+        item.purchaseOrderDate = item.purchaseOrderDate ? moment(item.purchaseOrderDate).format('YYYY-MMM-DD') : ''
+        item.commitDate = moment(item.commitDate).format('YYYY-MMM-DD')
+        item.createdAt = moment(item.createdAt).format('YYYY-MMM-DD HH:mm:ss')
+        item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('YYYY-MMM-DD')
+        item.requestDate = item.requestDate == "" ? "" : moment(item.requestDate).format('YYYY-MMM-DD')
+        item.updatedAt = moment(item.updatedAt).format('YYYY-MMM-DD HH:mm:ss')
         // item.total = item.quantity * item.unitPrice
         item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"
       }
