@@ -23,8 +23,8 @@ export const NO = "NO";
 export const OK = "ok";
 export const NOK = "nok";
 
-export const apiUrl = "http://localhost:2008/api/MicronMax/";
-// export const apiUrl = "https://asia-east1-micronmax.cloudfunctions.net/micronmaxbackend/api/MicronMax/";
+// export const apiUrl = "http://localhost:2008/api/MicronMax/";
+export const apiUrl = "https://asia-east1-micronmax.cloudfunctions.net/micronmaxbackend/api/MicronMax/";
 export const apiName = {
   authen: {
     login: "authen/login/",
