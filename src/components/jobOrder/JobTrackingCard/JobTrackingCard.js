@@ -148,7 +148,7 @@ class ComponentToPrint extends Component {
                 <tr style={{ fontSize: 12 }}>
                   <td>
                     {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-                  <td>{moment(item.purchaseOrderDate).add(-1, 'd').format('DD-MMM-YY')}</td>
+                  <td>{moment.utc(item.purchaseOrderDate).local().add(0, 'd').format('DD-MMM-YY')}</td>
                   <td>{item.purchaseOrderName}</td>
                   <td>{item['tbPurchaseOrderDetails.drawing']}</td>
                   <td>{item['tbPurchaseOrderDetails.description']}</td>
@@ -165,7 +165,7 @@ class ComponentToPrint extends Component {
             return <tr style={{ fontSize: 12 }}>
               <td>
                 {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-              <td>{moment(item['tbPurchaseOrderDetails.purchaseOrderDate']).add(-1, 'd').format('DD-MMM-YY')}</td>
+              <td>{moment.utc(item['tbPurchaseOrderDetails.purchaseOrderDate']).local().add(0, 'd').format('DD-MMM-YY')}</td>
               <td>{item.purchaseOrderName}</td>
               <td>{item['tbPurchaseOrderDetails.drawing']}</td>
               <td>{item['tbPurchaseOrderDetails.description']}</td>
@@ -245,7 +245,7 @@ class ShowPrint extends React.Component {
                 value={item['tbPurchaseOrderDetails.purchaseOrderDetailNumber']} />
               <br /> */}
               {item['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4)}</td>
-            <td >{moment(item['tbPurchaseOrderDetails.purchaseOrderDate']).add(-1, 'd').format('DD-MMM-YY')}</td>
+            <td >{moment.utc(item['tbPurchaseOrderDetails.purchaseOrderDate']).local().add(0, 'd').format('DD-MMM-YY')}</td>
             <td>{item.purchaseOrderName}</td>
             <td>{item['tbPurchaseOrderDetails.drawing']}</td>
             <td>{item['tbPurchaseOrderDetails.description']}</td>

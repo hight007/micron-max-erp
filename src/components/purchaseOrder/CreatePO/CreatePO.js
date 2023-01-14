@@ -141,9 +141,9 @@ export default function CreatePO() {
           const result = await httpClient.post(apiName.purchaseOrder.po,
             {
               purchaseOrderName,
-              purchaseOrderDate,
-              requestDate,
-              commitDate,
+              purchaseOrderDate: moment(purchaseOrderDate).format('YYYY-MM-DD'),
+              requestDate: moment(requestDate).format('YYYY-MM-DD'),
+              commitDate: moment(commitDate).format('YYYY-MM-DD'),
               contactNumber,
               createdBy: localStorage.getItem(key.user_id),
               customerId: customer,
