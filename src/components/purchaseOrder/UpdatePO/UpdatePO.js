@@ -268,7 +268,7 @@ export default function UpdatePO() {
         let poNumber = purchaseOrderNumber;
         const { poDetailNumber } = params
         if (purchaseOrderName != poDetails.tbPurchaseOrder.purchaseOrderName || customer != poDetails.tbPurchaseOrder.customerId) {
-          const po_ = await httpClient.get(apiName.purchaseOrder.poName + purchaseOrderName)
+          const po_ = await httpClient.get(apiName.purchaseOrder.poName + purchaseOrderName.replaceAll('/', '%2F'))
 
           if (!po_.data.result) {
             //if not create new po

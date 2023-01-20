@@ -224,7 +224,7 @@ export default function CreateNewPO() {
           setisLoad(true)
           //check have PO name ?
           const realPo =  purchaseOrderName == '-' ? 'tempPO_' + customer : purchaseOrderName
-          const po_ = await httpClient.get(apiName.purchaseOrder.poName + realPo)
+          const po_ = await httpClient.get(apiName.purchaseOrder.poName + realPo.replaceAll('/', '%2F'))
           let poNumber;
           if (!po_.data.result) {
             //if not create new po
