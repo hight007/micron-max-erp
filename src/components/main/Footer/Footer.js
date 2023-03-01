@@ -6,7 +6,7 @@ const Footer = () => {
     <footer className="main-footer">
       
       <div className="float-right d-none d-sm-inline-block">
-        <b >Version</b> 1.2.4
+        <b >Version</b> 1.2.5
       </div>
     </footer>
   );
