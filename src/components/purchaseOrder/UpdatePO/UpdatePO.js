@@ -196,11 +196,11 @@ export default function UpdatePO() {
       </div>
       <div className="form-group col-sm-4">
         <label >รายละเอียด (Description)</label>
-        <textarea rows={3} value={description} onChange={(e) => setdescription(e.target.value)} className="form-control" />
+        <textarea rows={description.split('\n').length > 3 ? description.split('\n').length : 3} value={description} onChange={(e) => setdescription(e.target.value)} className="form-control" />
       </div>
       <div className="form-group col-sm-4">
         <label >คอมเม้น (Comment)</label>
-        <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="form-control" />
+        <textarea rows={comment.split('\n').length > 3 ? comment.split('\n').length : 3} value={comment} onChange={(e) => setComment(e.target.value)} className="form-control" />
       </div>
       <div className="form-group col-sm-4">
         <i className="fas fa-sort-numeric-up-alt" style={{ marginRight: 10 }} />
