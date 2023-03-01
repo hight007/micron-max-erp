@@ -92,7 +92,7 @@ export default function CreateNewPO() {
         <DatePicker
           // required
           className="form-control" selected={purchaseOrderDate} onChange={(date) => {
-            setpurchaseOrderDate(moment(date).startOf('D').toDate())
+            date ? setpurchaseOrderDate(moment(date).startOf('D').toDate()) : setpurchaseOrderDate(date)
             // generatePoName(null, moment(date).startOf('D').toDate())
           }} />
 
@@ -113,14 +113,14 @@ export default function CreateNewPO() {
         <label >วันที่ส่งในใบสั่งซื้อ (Request date)</label>
         <DatePicker 
         // required 
-        className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
+          className="form-control" selected={requestDate} onChange={(date) => date ? setrequestDate(moment(date).startOf('D').toDate()) : setrequestDate(date)} />
 
       </div>
 
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่นัดส่งงาน (Commit date)*</label>
-        <DatePicker required className="form-control" selected={commitDate} onChange={(date) => setcommitDate(moment(date).startOf('D').toDate())} />
+        <DatePicker required className="form-control" selected={commitDate} onChange={(date) => date ? setcommitDate(moment(date).startOf('D').toDate()) : setcommitDate(date)} />
 
       </div>
       <div className="form-group col-sm-4">
@@ -135,7 +135,7 @@ export default function CreateNewPO() {
       <div className="form-group col-sm-4">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบส่งของ (Invoice date)</label>
-        <DatePicker className="form-control" selected={invoiceDate} onChange={(date) => setinvoiceDate(moment(date).startOf('D').toDate())} />
+        <DatePicker className="form-control" selected={invoiceDate} onChange={(date) => date ? setinvoiceDate(moment(date).startOf('D').toDate()) : setinvoiceDate(date)} />
 
       </div>
       <div className="form-group col-sm-4">

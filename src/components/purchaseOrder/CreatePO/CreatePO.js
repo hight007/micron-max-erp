@@ -69,7 +69,7 @@ export default function CreatePO() {
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ออกใบสั่งซื้อ (Purchase Order date)</label>
         <DatePicker required className="form-control" selected={purchaseOrderDate} onChange={(date) => {
-          setpurchaseOrderDate(moment(date).startOf('D').toDate())
+          date ? setpurchaseOrderDate(moment(date).startOf('D').toDate()) : setpurchaseOrderDate(date)
           // generatePoName(null, moment(date).startOf('D').toDate())
         }} />
 
@@ -87,13 +87,13 @@ export default function CreatePO() {
       <div className="form-group col-sm-6">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่ส่งในใบสั่งซื้อ (Request date)</label>
-        <DatePicker required className="form-control" selected={requestDate} onChange={(date) => setrequestDate(moment(date).startOf('D').toDate())} />
+        <DatePicker required className="form-control" selected={requestDate} onChange={(date) => date ? setrequestDate(moment(date).startOf('D').toDate()) : setrequestDate(date)} />
 
       </div>
       <div className="form-group col-sm-6">
         <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
         <label >วันที่นัดส่งงาน (Commit date)</label>
-        <DatePicker required className="form-control" selected={commitDate} onChange={(date) => setcommitDate(moment(date).startOf('D').toDate())} />
+        <DatePicker required className="form-control" selected={commitDate} onChange={(date) => date ? setcommitDate(moment(date).startOf('D').toDate()) : setcommitDate(date)} />
 
       </div>
 
