@@ -36,6 +36,8 @@ export default function ReportPO() {
   const [purchaseData, setpurchaseData] = useState([])
   const [customers, setcustomers] = useState([])
 
+  const [muiTableKey, setMuiTableKey] = useState(0);
+
   useEffect(() => {
     doGetCustomer()
     getUsers()
@@ -101,6 +103,7 @@ export default function ReportPO() {
   const doGetPurchaseOrder = async () => {
     try {
       setisLoad(true)
+      setMuiTableKey(muiTableKey + 1)
       let condition = {}
       if (dateType != '') {
         condition[dateType] = { dateFrom: moment(dateFrom).startOf('day').toDate(), dateTo: moment(dateTo).endOf('day').toDate() }
@@ -480,6 +483,7 @@ export default function ReportPO() {
       return <>
         <div className="col-md-12">
           <MaterialReactTable
+            key={muiTableKey}
             enableColumnResizing
             columnResizeMode="onChange"
             columns={columns}
@@ -512,7 +516,7 @@ export default function ReportPO() {
                   <button
                     disabled={
                       // (!table.getIsSomeRowsSelected() || selectdItem.length > 7) && (!table.getIsAllRowsSelected())
-                      selectdItem.length < 8 && selectdItem.length > 0 ? false : true
+                      selectdItem.length < 10 && selectdItem.length > 0 ? false : true
                     }
                     className="btn btn-primary"
                     onClick={(e) => {

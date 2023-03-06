@@ -58,6 +58,10 @@ export default function JobCards(props) {
                   <ReactToPrint
                     trigger={() => <button className="btn btn-primary">พิมพ์ใบคำสั่งงาน</button>}
                     content={() => componentRef.current}
+                    pageStyle={`@page {
+                                  size: A4 portrait !important;
+                                  margin: 0;
+                              }`}
                   />
                   <ComponentToPrint
                     listPo={listPo}
@@ -115,9 +119,9 @@ class ComponentToPrint extends Component {
     }
 
     const renderPageContent = (item, index) => {
-      const targetPoPerPage = 7
+      const targetPoPerPage = 9
 
-      if (item.length < 8) {
+      if (item.length < 10) {
         for (let i = item.length; i < targetPoPerPage; i++) {
           item.push({})
         }
@@ -135,8 +139,8 @@ class ComponentToPrint extends Component {
             <td style={{ textAlign: 'left' }} colspan="3"><b>เบอร์ติดต่อ : </b>{item[0]["tbPurchaseOrderDetails.contactNumber"]}</td>
           </tr>
           <tr>
-            <th style={{ width: '5%' }}>ITEM</th>
-            <th style={{ width: '13%' }}>PO#</th>
+            <th style={{ width: '3%' }}>ITEM</th>
+            <th style={{ width: '15%' }}>PO#</th>
             <th style={{ width: '16%' }}>CODE</th>
             <th>DESCRIPTION</th>
             <th style={{ width: '8%' }}>QTY</th>
@@ -150,9 +154,9 @@ class ComponentToPrint extends Component {
         if (data) {
           return data.map((item_, index) => {
             return (
-              <tr>
+              <tr style={{fontSize : 13 , }}>
                 {/* <td>{item_.i != null ? <p style={{ visibility: 'hidden' }}>{index + 1}</p> : `${index + 1}.`}</td> */}
-                <td>{item_['tbPurchaseOrderDetails.purchaseOrderDetailName'] ? item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4) : ''}</td>
+                <td style={{ height: 50}}>{item_['tbPurchaseOrderDetails.purchaseOrderDetailName'] ? item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].substr(item_['tbPurchaseOrderDetails.purchaseOrderDetailName'].length - 4) : ''}</td>
                 <td style={{ textAlign: 'left' }}>{item_.purchaseOrderName ?? ''}</td>
                 <td style={{ textAlign: 'left' }}> {item_["tbPurchaseOrderDetails.drawing"] ?? ''}</td>
                 <td style={{ textAlign: 'left' }}>{item_["tbPurchaseOrderDetails.description"] ?? ''}</td>
@@ -165,7 +169,7 @@ class ComponentToPrint extends Component {
       }
 
       return (
-        <div className="page">
+        <div className="page" style={{ height: '100%' , width: '100%' }}>
           <div className="subpage">
             <div className="row" >
               <div className="col-md-12 text-center" style={{ border: "2px solid", borderColor: "gray", margin: 20 }}>
@@ -178,7 +182,7 @@ class ComponentToPrint extends Component {
                     {renderTableBody(item)}
                   </tbody>
                 </table>
-                <hr style={{ marginTop: 50, marginBottom: 50, border: '1px dashed' }}></hr>
+                <hr style={{ marginTop: 30, marginBottom: 40, border: '1px dashed' }}></hr>
                 <h5 style={{ marginTop: 10, padding: 5, backgroundColor: 'gray', color: "white" }}>
                   JOB ORDER CARD
                 </h5>
