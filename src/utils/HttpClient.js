@@ -13,7 +13,7 @@ axios.interceptors.request.use(async (config) => {
     if (jwtToken != null) {
         config.headers = { 'x-access-token': jwtToken }
     }
-    config.timeout = 10000 // 10 Second 
+    config.timeout = 30000 // 30 Second 
     return config
 })
 
