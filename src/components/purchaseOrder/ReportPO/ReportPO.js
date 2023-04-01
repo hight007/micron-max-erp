@@ -19,8 +19,8 @@ export default function ReportPO() {
   const [isLoad, setisLoad] = useState(false)
   const [users, setusers] = useState([])
 
-  const [dateFrom, setdateFrom] = useState(moment().add(-1, 'M').toDate())
-  const [dateTo, setdateTo] = useState(moment().endOf('D').toDate())
+  const [dateFrom, setdateFrom] = useState(moment().add(-1, 'd').toDate())
+  const [dateTo, setdateTo] = useState(moment().endOf('d').toDate())
   const [dateType, setdateType] = useState('')
 
 
