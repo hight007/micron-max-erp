@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useMemo} from "react";
 import ContentHeader from '../../main/ContentHeader/ContentHeader';
 import LoadingScreen from '../../main/LoadingScreen';
 import DatePicker from "react-datepicker";
@@ -19,7 +19,7 @@ export default function ReportPO() {
   const [isLoad, setisLoad] = useState(false)
   const [users, setusers] = useState([])
 
-  const [dateFrom, setdateFrom] = useState(moment().add(-1, 'd').toDate())
+  const [dateFrom, setdateFrom] = useState(moment().add(-3, 'M').toDate())
   const [dateTo, setdateTo] = useState(moment().endOf('d').toDate())
   const [dateType, setdateType] = useState('')
 
@@ -41,7 +41,7 @@ export default function ReportPO() {
   useEffect(() => {
     doGetCustomer()
     getUsers()
-    doGetPurchaseOrder()
+    // doGetPurchaseOrder()
   }, [])
 
   const headers = [
@@ -331,7 +331,7 @@ export default function ReportPO() {
     }
   }
 
-  const renderSearchResult = () => {
+  const renderSearchResult = useMemo(() => {
     const columns = [
       {
         header: 'แก้ไข/ลบ',
@@ -547,7 +547,7 @@ export default function ReportPO() {
         </div>
       </>
     }
-  }
+  }, [purchaseData])
 
 
 
@@ -645,7 +645,7 @@ export default function ReportPO() {
 
                 </div>
                 <div className="card-body row">
-                  {renderSearchResult()}
+                  {renderSearchResult}
                 </div>
               </div>
             </div>
