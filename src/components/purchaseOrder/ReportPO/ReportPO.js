@@ -8,9 +8,8 @@ import Swal from "sweetalert2";
 import moment from "moment";
 import { httpClient } from "../../../utils/HttpClient";
 import MaterialReactTable from 'material-react-table';
-import { ExportToCsv } from 'export-to-csv'; //or use your library of choice here
-import { CSVLink, CSVDownload } from "react-csv";
-import { Box, Button } from '@mui/material';
+import { CSVLink } from "react-csv";
+import { Box } from '@mui/material';
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
@@ -93,7 +92,7 @@ export default function ReportPO() {
   }
 
   const doReset = () => {
-    setdateFrom(moment().add(-1, 'M').toDate())
+    setdateFrom(moment().add(-3, 'M').toDate())
     setdateTo(moment().startOf('D').toDate())
     setdateType('')
     setpurchaseOrderName('')
@@ -479,6 +478,12 @@ export default function ReportPO() {
       window.open('/JobOrder/JobTrackingCards/' + JSON.stringify(_data_), '_blank');
     }
 
+    const handleDeliveryOrder = (data) => {
+      const _data = _.map(data, 'original');
+      const _data_ = _.map(_data, 'purchaseOrderDetailNumber');
+      window.open('/DeliveryOrder/Create/' + JSON.stringify(_data_), '_blank');
+    }
+
     if (purchaseData.length > 0) {
       return <>
         <div className="col-md-12">
@@ -504,6 +509,7 @@ export default function ReportPO() {
             positionToolbarAlertBanner="bottom"
             renderTopToolbarCustomActions={({ table }) => {
               let selectdItem = _.map(table.getSelectedRowModel().rows, 'original')
+              const selectedCustomer = selectdItem.map(item => item.customerName)
               return (
                 <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
                   <CSVLink className="btn btn-primary"
@@ -540,6 +546,19 @@ export default function ReportPO() {
                     <i className="fas fa-file-contract" style={{ marginRight: 10 }} />
                     พิมพ์ใบตามงาน
                   </button>
+                  <button
+                    disabled={
+                      (!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) || (_.uniq(selectedCustomer)).length > 1
+                    }
+                    className="btn btn-primary"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleDeliveryOrder(table.getSelectedRowModel().rows)
+                    }}
+                  >
+                    <i className="fas fa-file-contract" style={{ marginRight: 10 }} />
+                    ออกใบส่งของ
+                  </button>
                 </Box>
               )
             }}
@@ -548,7 +567,6 @@ export default function ReportPO() {
       </>
     }
   }, [purchaseData])
-
 
 
   const doDeletePoDetail = (purchaseOrderDetailNumber, purchaseOrderDetailName_) => {

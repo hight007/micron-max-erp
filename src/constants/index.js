@@ -23,8 +23,8 @@ export const NO = "NO";
 export const OK = "ok";
 export const NOK = "nok";
 
-// export const apiUrl = "http://localhost:2008/api/MicronMax/";
-export const apiUrl = "https://asia-southeast1-micronmax.cloudfunctions.net/micronmax2/api/MicronMax/";
+export const apiUrl = "http://localhost:2008/api/MicronMax/";
+// export const apiUrl = "https://asia-southeast1-micronmax.cloudfunctions.net/micronmax2/api/MicronMax/";
 
 export const apiName = {
   authen: {
@@ -37,13 +37,19 @@ export const apiName = {
   purchaseOrder:
   {
     po: 'purchaseOrder/po/',
-    detail : 'purchaseOrder/detail/',
+    detail: 'purchaseOrder/detail/',
     get: 'purchaseOrder/get/',
     get2: 'purchaseOrder/get2/',
-    listPo : 'purchaseOrder/listPo/',
-    jobTracking : 'purchaseOrder/jobTracking/',
+    listPo: 'purchaseOrder/listPo/',
+    jobTracking: 'purchaseOrder/jobTracking/',
     generatePoDetailNumber: 'purchaseOrder/generatePoDetailNumber/',
-    poName : 'purchaseOrder/poName/',
+    poName: 'purchaseOrder/poName/',
+  },
+  do: {
+    deliveryOrder: 'do/deliveryOrder/',
+    deliveryOrderDetail: 'do/deliveryOrderDetail/',
+    report: 'do/report/',
+    find: 'do/find/',
   },
   master: {
     customer: 'master/customer/',

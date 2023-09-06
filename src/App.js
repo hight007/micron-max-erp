@@ -33,6 +33,11 @@ import JobTrackingCard from "./components/jobOrder/JobTrackingCard"
 //master
 import Customer from "./components/master/Customer"
 
+//Delivery order
+import CreateDo from "./components/DeliveryOrder/CreateDo";
+import UpdateDo from './components/DeliveryOrder/UpdateDo';
+import ReportDo from "./components/DeliveryOrder/ReportDo";
+
 const showElement = (element) => {
   const isLogined = localStorage.getItem(key.isLogined);
   if (isLogined == "true") {
@@ -73,6 +78,11 @@ function App() {
 
         {/* Master */}
         <Route path="/Master/Customer" element={<RequireAuth userLevel={["admin", "power"]}><Customer /></RequireAuth>} />
+
+        {/* Delivery Order */}
+        <Route path="/DeliveryOrder/Create/:poDetailNumber" element={<RequireAuth><CreateDo /></RequireAuth>} />
+        <Route path="/DeliveryOrder/Update/:deliveryOrderNumber" element={<RequireAuth><UpdateDo /></RequireAuth>} />
+        <Route path="/DeliveryOrder/Report/" element={<RequireAuth><ReportDo /></RequireAuth>} />
 
         <Route
           path="/"

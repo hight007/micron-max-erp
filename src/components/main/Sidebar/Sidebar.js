@@ -92,6 +92,39 @@ const Sidebar = () => {
     );
   };
 
+  const menu_DeliveryOrder_render = () => {
+    return (
+      <li className="nav-item has-treeview">
+        <a
+          className={`nav-link ${location.pathname.includes("DeliveryOrder") ? "active" : ""
+            }`}
+        >
+          <i className="nav-icon fas fa-truck" />
+
+          <p>
+            การส่งสินค้า
+            <i className="right fas fa-angle-left" />
+          </p>
+        </a>
+        <ul className="nav nav-treeview">
+          <li className="nav-item">
+            <a
+              onClick={() => navigate("/DeliveryOrder/Report")}
+              className={
+                location.pathname.includes("DeliveryOrder/Report")
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              <i className="far fa-circle nav-icon" />
+              <p>รายงานการส่งสินค้า</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+    );
+  };
+
   const menu_master_render = () => {
     const userLevel = localStorage.getItem(key.user_level)
     if (userLevel == 'admin' || userLevel == 'power') {
@@ -142,6 +175,8 @@ const Sidebar = () => {
       );
     }
   };
+
+
 
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4 bg-main">
@@ -198,6 +233,7 @@ const Sidebar = () => {
                 <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true">
                   {menu_purchaseOrder_render()}
                   {menu_jobOrder_render()}
+                  {menu_DeliveryOrder_render()}
                   {menu_master_render()}
                 </ul>
 
