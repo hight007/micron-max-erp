@@ -68,8 +68,9 @@ export default function ReportDo() {
         condition.purchaseOrderName = (purchaseOrderName.split('\n')).map(item => item.trim())
       }
 
+      console.log(customerId);
       if (customerId != '' && customerId != null) {
-        condition.customerId = (customerId.split('\n')).map(item => item.trim())
+        condition.customerId = customerId
       }
 
       if (drawing != '' && drawing != null) {
@@ -180,7 +181,7 @@ export default function ReportDo() {
           <label >สถานะ (Status)</label>
           <Select
             key={keys} // Use the key prop
-            closeMenuOnSelect={false}
+            closeMenuOnSelect={true}
             components={animatedComponents}
             defaultValue={{ value: null, label: 'ทั้งหมด' }}
             options={[{ value: null, label: 'ทั้งหมด' }, { value: 'Inprocess', label: 'ดำเนินการ' }, { value: 'Done', label: 'เสร็จสิ้น' }]}

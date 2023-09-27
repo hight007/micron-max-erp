@@ -17,7 +17,7 @@ export default function CreateDo() {
 
   const [isLoad, setisLoad] = useState(false)
 
-  const [status, setstatus] = useState('ดำเนินการ')
+  const [status, setstatus] = useState('Inprocess')
   const [deliveryDate, setdeliveryDate] = useState(moment().startOf('D').toDate())
   const [description, setdescription] = useState('')
 
