@@ -289,6 +289,11 @@ export default function ReportDo() {
         Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" /> : <>{key.user_level}</>
       },
       {
+        header: 'Delivery price (vat)',
+        accessorKey: 'deliveryPrice', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={(cell.getValue() * (1 + (row.original.vat/100))).toFixed(2)} displayType="text" /> : <>{key.user_level}</>
+      },
+      {
         header: 'Customer',
         accessorKey: 'customerName', //simple accessorKey pointing to flat data
       },

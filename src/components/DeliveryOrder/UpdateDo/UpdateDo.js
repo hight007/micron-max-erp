@@ -21,6 +21,13 @@ export default function UpdateDo() {
   const [deliveryDate, setdeliveryDate] = useState(moment().startOf('D').toDate())
   const [description, setdescription] = useState('')
 
+  const [invoiceNumber, setinvoiceNumber] = useState('')
+  const [invoiceDate, setinvoiceDate] = useState(null)
+  const [vat, setvat] = useState('')
+  const [tempDoNumber, settempDoNumber] = useState(null)
+  const [tempDoDate, settempDoDate] = useState(null)
+  const [tempDoQty, settempDoQty] = useState('')
+
   const [listPoDetail, setlistPoDetail] = useState([])
 
   useEffect(() => {
@@ -40,6 +47,15 @@ export default function UpdateDo() {
           setstatus(result[0].deliveryStatus)
           setdeliveryDate(moment(result[0].deliveryDate).toDate())
           setdescription(result[0].doDescription)
+          setinvoiceNumber(result[0].invoiceNumber)
+          setinvoiceDate(moment(result[0].invoiceDate).toDate())
+          setvat(result[0].vat)
+          settempDoNumber(result[0].tempDoNumber)
+          if (result[0].tempDoDate != null) {
+            settempDoDate(moment(result[0].tempDoDate).toDate())
+          }
+          settempDoQty(result[0].tempDoQty)
+
 
           setlistPoDetail(result.map(item => ({ ...item, oldDeliveryQty: item.deliveryOrderQty })))
         } else {
@@ -87,7 +103,7 @@ export default function UpdateDo() {
               const updateItem = {
                 deliveryOrderDetailId: item.deliveryOrderDetailId,
                 deliveryOrderQty: item.deliveryOrderQty,
-                isDeleted : 1,
+                isDeleted: 1,
                 updatedBy: localStorage.getItem(key.user_id
                 )
               }
@@ -145,6 +161,12 @@ export default function UpdateDo() {
               description,
               updatedBy: localStorage.getItem(key.user_id),
               deliveryOrderNumber,
+              invoiceNumber,
+              invoiceDate,
+              vat,
+              tempDoNumber,
+              tempDoDate,
+              tempDoQty,
             }
           )
           if (result.data.api_result == OK) {
@@ -218,6 +240,77 @@ export default function UpdateDo() {
             className="form-control"
           />
         </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >เลขใบสั่งของ (Invoice Number)</label>
+          <input
+            required
+            value={invoiceNumber}
+            onChange={(e) => setinvoiceNumber(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <div className="form-group col-md-4 resizeable">
+          <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
+          <label >วันที่ใบสั่งของ</label>
+          <DatePicker
+            className="form-control"
+            selected={invoiceDate}
+            onChange={(date) => setinvoiceDate(moment(date).startOf('D').toDate())}
+          />
+
+        </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >ภาษีมูลค่าเพิ่ม (Vat%)</label>
+          <input
+            type='number'
+            value={vat}
+            onChange={(e) => setvat(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >เลขใบส่งของชั่วคราว (Tempolary delivery order number)</label>
+          <input
+            value={tempDoNumber}
+            onChange={(e) => settempDoNumber(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <div className="form-group col-md-4 resizeable">
+          <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
+          <label >วันที่ใบส่งของชั่วคราว (Tempolary delivery order date)</label>
+          <DatePicker
+            className="form-control"
+            selected={tempDoDate}
+            onChange={(date) => settempDoDate(moment(date).startOf('D').toDate())}
+          />
+
+        </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >จำนวนใบส่งของชั่วคราว (Tempolary delivery order Qty)</label>
+          <input
+            type='number'
+            value={tempDoQty}
+            onChange={(e) => settempDoQty(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >ราคารวม (Total price)</label>
+          <br />
+          <NumericFormat thousandSeparator="," value={listPoDetail.map(item => ((parseFloat(item.deliveryOrderQty ?? 0)) * (parseFloat(item.unitPrice ?? 0)))).reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2)} displayType="text" />
+        </div>
+        <div className="form-group col-sm-4">
+          {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
+          <label >ราคารวม vat (Total price include vat)</label>
+          <br />
+          <NumericFormat thousandSeparator="," value={(listPoDetail.map(item => ((parseFloat(item.deliveryOrderQty ?? 0)) * (parseFloat(item.unitPrice ?? 0)))).reduce((a, b) => parseFloat(a) + parseFloat(b), 0) * (1 + (vat / 100))).toFixed(2)} displayType="text" />
+        </div>
       </>
     )
   }
@@ -273,6 +366,11 @@ export default function UpdateDo() {
         header: 'Unit price',
         accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
         Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={cell.getValue()} displayType="text" /> : <></>
+      },
+      {
+        header: 'Total price',
+        accessorKey: 'unitPrice', //simple accessorKey pointing to flat data
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={(row.original.deliveryOrderQty * cell.getValue() * (1 + (vat / 100))).toFixed(2)} displayType="text" /> : <></>
       },
       {
         header: 'Commit date',
