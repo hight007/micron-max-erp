@@ -23,7 +23,7 @@ export default function CreateDo() {
 
   const [invoiceNumber, setinvoiceNumber] = useState('')
   const [invoiceDate, setinvoiceDate] = useState(moment().startOf('D').toDate())
-  const [vat, setvat] = useState(7)
+  const [vat, setvat] = useState('')
   const [tempDoNumber, settempDoNumber] = useState(null)
   const [tempDoDate, settempDoDate] = useState(null)
   const [tempDoQty, settempDoQty] = useState(0)
@@ -84,6 +84,8 @@ export default function CreateDo() {
               tempDoQty,
             }
           )
+
+
           console.log(result.data);
           if (result.data.api_result == OK) {
             let deliveryOrderNumber = result.data.result.deliveryOrderNumber
@@ -92,6 +94,7 @@ export default function CreateDo() {
               let newItem = { ...item, deliveryOrderNumber, createdBy: localStorage.getItem(key.user_id) }
               console.log(newItem);
               await httpClient.post(apiName.do.deliveryOrderDetail, newItem)
+              await httpClient.patch(apiName.purchaseOrder.detail, { purchaseOrderDetailNumber: item.purchaseOrderDetailNumber, finishedQuantity: parseInt(item.finishedQuantity)  + parseInt(item.deliveryOrderQty ) })
             }
 
             Swal.fire({
@@ -121,10 +124,11 @@ export default function CreateDo() {
   const doReset = () => {
 
   }
-  const setDeliverQty = (value, purchaseOrderDetailNumber, unitPrice) => {
+  const setDeliverQty = (value, purchaseOrderDetailNumber, unitPrice, finishedQuantity) => {
     const targetDoDetailData = doDetailData.filter(item => item.purchaseOrderDetailNumber === purchaseOrderDetailNumber)
-    targetDoDetailData[0].deliveryOrderQty = value;
+    targetDoDetailData[0].deliveryOrderQty = parseInt(value);
     targetDoDetailData[0].unitPrice = unitPrice;
+    targetDoDetailData[0].finishedQuantity = parseInt(finishedQuantity);
     setc(c + 1)
     //set settempDoQty
     settempDoQty(doDetailData.map(item => item.deliveryOrderQty ?? 0).reduce((a, b) => parseFloat(a) + parseFloat(b), 0))
@@ -167,7 +171,7 @@ export default function CreateDo() {
         </div>
         <div className="form-group col-sm-4">
           {/* <i className="fas fa-shopping-cart" style={{ marginRight: 10 }} /> */}
-          <label >เลขใบสั่งของ (Invoice Number)</label>
+          <label >เลขที่ใบเสร็จ (Invoice Number)</label>
           <input
             required
             value={invoiceNumber}
@@ -177,7 +181,7 @@ export default function CreateDo() {
         </div>
         <div className="form-group col-md-4 resizeable">
           <i className="far fa-calendar-alt" style={{ marginRight: 10 }} />
-          <label >วันที่ใบสั่งของ</label>
+          <label >วันที่ออกใบเสร็จ</label>
           <DatePicker
             className="form-control"
             selected={invoiceDate}
@@ -269,9 +273,9 @@ export default function CreateDo() {
               type='number'
               min={1}
               step={1}
-              placeholder={row.original.finishedQuantity <= row.original.deliveredqty ? 'Can not deliver this PO' : ''}
-              max={row.original.finishedQuantity - row.original.deliveredqty}
-              onChange={(e) => setDeliverQty(e.target.value, cell.getValue(), row.original.unitPrice)}
+              // placeholder={row.original.finishedQuantity <= row.original.deliveredqty ? 'Can not deliver this PO' : ''}
+              max={row.original.quantity - row.original.deliveredqty}
+              onChange={(e) => setDeliverQty(e.target.value, cell.getValue(), row.original.unitPrice, row.original.finishedQuantity)}
               required
               className="form-control"
             />

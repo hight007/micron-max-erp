@@ -180,6 +180,7 @@ export default function UpdateDo() {
               }
 
               await httpClient.patch(apiName.do.deliveryOrderDetail, updateItem)
+              await httpClient.patch(apiName.purchaseOrder.detail, { purchaseOrderDetailNumber: item.purchaseOrderDetailNumber, finishedQuantity: parseInt(item.finishedQuantity) + (parseInt(item.deliveryOrderQty) - parseInt(item.oldDeliveryQty)) })
             }
 
             Swal.fire({
@@ -346,7 +347,7 @@ export default function UpdateDo() {
               min={1}
               step={1}
               // placeholder={row.original.finishedQuantity <= row.original.deliveredqty ? 'Can not deliver this PO' : ''}
-              max={row.original.finishedQuantity - (row.original.deliveredqty - row.original.oldDeliveryQty)}
+              max={row.original.quantity - (row.original.deliveredqty - row.original.oldDeliveryQty)}
               onChange={(e) => setDeliverQty(e.target.value, row.original.purchaseOrderDetailNumber)}
               required
               className="form-control"
