@@ -449,9 +449,14 @@ export default function ReportPO() {
     ]
 
     const handleExportData = (rows) => {
-      let data = rows.map((row) => row.original)
+      let data_ = rows.map((row) => row.original)
+      let data = _.cloneDeep(data_);
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
+
+        // const addSingleQuote = (value) => (value.startsWith('0') && !isNaN(Number(value))) ? `'${value}` : value;
+        // item.purchaseOrderName = (item.purchaseOrderName.startsWith('0') && !isNaN(Number(item.purchaseOrderName))) ? `'${item.purchaseOrderName}` : item.purchaseOrderName;
+        item.purchaseOrderName = `=""${item.purchaseOrderName}""`
         item.purchaseOrderDate = item.purchaseOrderDate ? moment(item.purchaseOrderDate).format('YYYY-MM-DD') : ''
         item.commitDate = moment(item.commitDate).format('YYYY-MM-DD')
         item.createdAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss')
