@@ -106,9 +106,25 @@ export default function ReportDo() {
     setdateTo(moment().startOf('D').toDate())
   }
   const handleExportData = (rows) => {
-    let data = rows.map((row) => row.original)
+    // let data = rows.map((row) => row.original)
+    let data_ = reportResult
+    let data = _.cloneDeep(data_);
     for (let index = 0; index < data.length; index++) {
       const item = data[index];
+      item.purchaseOrderName = `=""${item.purchaseOrderName}""`
+      item.commitDate = moment(item.commitDate).format('YYYY-MM-DD')
+      item.deliveryDate = moment(item.deliveryDate).format('YYYY-MM-DD')
+    }
+
+    return data;
+  };
+  const handleExportSelectedData = (rows) => {
+    let data_ = rows.map((row) => row.original)
+    let data = _.cloneDeep(data_);
+    // let data = reportResult
+    for (let index = 0; index < data.length; index++) {
+      const item = data[index];
+      item.purchaseOrderName = `=""${item.purchaseOrderName}""`
       item.commitDate = moment(item.commitDate).format('YYYY-MM-DD')
       item.deliveryDate = moment(item.deliveryDate).format('YYYY-MM-DD')
     }
@@ -229,7 +245,7 @@ export default function ReportDo() {
       {
         header: 'Edit',
         accessorKey: 'deliveryOrderNumber', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => <Link className="btn btn-default" target="_blank"  to={`/DeliveryOrder/Update/${cell.getValue()}`}>
+        Cell: ({ cell, row }) => <Link className="btn btn-default" target="_blank" to={`/DeliveryOrder/Update/${cell.getValue()}`}>
           <i className="fas fa-edit" />
         </Link>
       },
@@ -291,7 +307,7 @@ export default function ReportDo() {
       {
         header: 'Delivery price (vat)',
         accessorKey: 'deliveryPrice', //simple accessorKey pointing to flat data
-        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={(cell.getValue() * (1 + (row.original.vat/100))).toFixed(2)} displayType="text" /> : <>{key.user_level}</>
+        Cell: ({ cell, row }) => ["admin", "power"].includes(localStorage.getItem(key.user_level)) ? <NumericFormat thousandSeparator="," value={(cell.getValue() * (1 + (row.original.vat / 100))).toFixed(2)} displayType="text" /> : <>{key.user_level}</>
       },
       {
         header: 'Customer',
@@ -342,7 +358,7 @@ export default function ReportDo() {
           columns={columns}
           data={reportResult}
           enableColumnOrdering
-          // enableRowSelection
+          enableRowSelection
           enableStickyHeader
           enableStickyFooter
           enablePagination={true}
@@ -364,10 +380,17 @@ export default function ReportDo() {
                 >
                   <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV
                 </CSVLink>
+                <CSVLink className="btn btn-primary"
+                  data={handleExportSelectedData(table.getSelectedRowModel().rows)}
+                  filename={`Report_Delivery_Order_${moment().format('DD-MMM-YY')}.csv`}
+                  headers={headers}
+                >
+                  <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV
+                </CSVLink>
               </Box>
             )
           }}
-          />
+        />
       </div>
     )
   }, [reportResult])

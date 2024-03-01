@@ -288,6 +288,7 @@ export default function UpdatePO() {
             }
           } else {
             poNumber = po_.data.result.purchaseOrderNumber
+            console.log(purchaseOrderNumber);
             await httpClient.patch(apiName.purchaseOrder.po, {
               purchaseOrderNumber: poNumber,
               customerId: customer,

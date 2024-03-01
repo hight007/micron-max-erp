@@ -449,7 +449,33 @@ export default function ReportPO() {
     ]
 
     const handleExportData = (rows) => {
+      // let data_ = rows.map((row) => row.original)
+      let data_ = purchaseData
+      let data = _.cloneDeep(data_);
+      for (let index = 0; index < data.length; index++) {
+        const item = data[index];
+
+        // const addSingleQuote = (value) => (value.startsWith('0') && !isNaN(Number(value))) ? `'${value}` : value;
+        // item.purchaseOrderName = (item.purchaseOrderName.startsWith('0') && !isNaN(Number(item.purchaseOrderName))) ? `'${item.purchaseOrderName}` : item.purchaseOrderName;
+        item.purchaseOrderName = `=""${item.purchaseOrderName}""`
+        item.purchaseOrderDate = item.purchaseOrderDate ? moment(item.purchaseOrderDate).format('YYYY-MM-DD') : ''
+        item.commitDate = moment(item.commitDate).format('YYYY-MM-DD')
+        item.createdAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss')
+        item.invoiceDate = item.invoiceDate == "" ? "" : moment(item.invoiceDate).format('YYYY-MM-DD')
+        item.requestDate = item.requestDate == "" ? "" : moment(item.requestDate).format('YYYY-MM-DD')
+        item.updatedAt = moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+        // item.total = item.quantity * item.unitPrice
+        item.status = item.quantity > item.finishedQuantity ? "ดำเนินการ" : "เสร็จสิ้น"
+      }
+      // console.log(data);
+
+      return data;
+    };
+
+
+    const handleExportSelectedData = (rows) => {
       let data_ = rows.map((row) => row.original)
+      // let data_ = purchaseData
       let data = _.cloneDeep(data_);
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
@@ -519,6 +545,13 @@ export default function ReportPO() {
                 <Box sx={{ display: 'flex', gap: '1rem', p: '0.5rem', flexWrap: 'wrap' }}>
                   <CSVLink className="btn btn-primary"
                     data={handleExportData(table.getRowModel().rows)}
+                    filename={`Report_Purchase_Order_${moment().format('DD-MMM-YY')}.csv`}
+                    headers={headers}
+                  >
+                    <i className="fas fa-file-csv" style={{ marginRight: 10 }} />ส่งออกข้อมูลเป็น CSV ทั้งหมด
+                  </CSVLink>
+                  <CSVLink className="btn btn-primary"
+                    data={handleExportSelectedData(table.getSelectedRowModel().rows)}
                     filename={`Report_Purchase_Order_${moment().format('DD-MMM-YY')}.csv`}
                     headers={headers}
                   >
